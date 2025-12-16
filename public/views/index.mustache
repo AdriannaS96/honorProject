@@ -1,0 +1,30 @@
+{{> header}}
+
+<!-- Hero Section -->
+<header class="hero d-flex align-items-center text-white text-center">
+  <div class="container">
+    <h1 class="display-4 fw-bold mb-3">Find Your Perfect Home</h1>
+    <p class="lead mb-4">For tenants and landlords alike – browse, list, and connect easily</p>
+    <a href="#listings" class="btn btn-primary btn-lg shadow-lg">Browse Listings</a>
+  </div>
+</header>
+
+<!-- Listings Section -->
+<section id="listings" class="container my-5">
+  <h2 class="text-center mb-5">Featured Listings</h2>
+  <div class="row g-4">
+    {{#featuredListings}}
+      <div class="col-md-4">
+        {{> listing-card}}
+      </div>
+    {{/featuredListings}}
+  </div>
+</section>
+<!-- About Section -->
+<section id="about" class="bg-light py-5">
+  <div class="container text-center">
+    <h2 class="mb-4">About Us</h2>
+    <p class="text-muted fs-5">HousingPlatform connects tenants and landlords seamlessly. List your property, browse apartments, and find the perfect match securely and easily.</p>
+  </div>
+</section>
+{{> footer}}
