@@ -1,0 +1,65 @@
+{{> header}}
+
+<div class="dashboard-container">
+
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link active" href="/dashboard/landlord">Dashboard</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/landlord/my_listings">My Listings</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/landlord/add_listing">Add Listing</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/landlord/messages">Messages</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- Main content -->
+  <main class="main-content">
+    <div class="d-flex justify-content-between align-items-center pt-3 pb-2 mb-3 border-bottom">
+      <h1 class="h2">Welcome, {{user.username}}</h1>
+    </div>
+
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card text-white bg-primary mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Active Listings</h5>
+            <p class="card-text">{{activeListings}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card text-white bg-success mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Pending Requests</h5>
+            <p class="card-text">{{pendingRequests}}</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card text-white bg-warning mb-3">
+          <div class="card-body">
+            <h5 class="card-title">Messages</h5>
+            <p class="card-text">{{messages}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+{{> footer}}
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

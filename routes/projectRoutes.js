@@ -1,22 +1,183 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcrypt");
 
-// HOME
-router.get('/', (req, res) => {
-    res.render('index');   
+// Modele
+const listingModel = require("../models/listingModel");
+const userDAO = require("../models/userModel");
+
+// Middleware
+const { isAuthenticated, isLandlord, isTenant } = require("../auth/auth");
+
+/* ================= HOME ================= */
+router.get("/", (req, res) => {
+  res.render("index", {
+    title: "Home",
+    user: req.session.user || null
+  });
 });
 
-// USER
-router.get('/login', (req, res) => {
-    res.render('user/login');   
+/* ================= ABOUT ================= */
+router.get("/about", (req, res) => {
+  res.render("aboutUs", {
+    title: "About Us",
+    user: req.session.user || null
+  });
 });
 
-router.get('/register', (req, res) => {
-    res.render('user/register'); 
+/* ================= REGISTER ================= */
+router.get("/register", (req, res) => {
+  res.render("user/register", {
+    title: "Register"
+  });
 });
 
-router.get('/about', (req, res) => {
-    res.render('aboutUs'); 
+router.post("/register", async (req, res) => {
+  const { username, password, role } = req.body;
+
+  // if user exists
+  userDAO.findByUsername(username, async (err, existingUser) => {
+    if (err) return res.send("Database error");
+    if (existingUser) {
+      return res.render("user/register", {
+        title: "Register",
+        error: "User already exists"
+      });
+    }
+
+    // New User
+    try {
+      await userDAO.create(username, password, role);
+      res.redirect("/login");
+    } catch (err) {
+      res.send("Registration error:" + err.message);
+    }
+  });
 });
+
+/* ================= LOGIN ================= */
+router.get("/login", (req, res) => {
+  res.render("user/login", {
+    title: "Login"
+  });
+});
+
+router.post("/login", (req, res) => {
+  const { username, password } = req.body;
+
+  userDAO.findByUsername(username, async (err, user) => {
+    if (err || !user) {
+      return res.render("user/login", { error: "User not found" });
+    }
+
+    const match = await bcrypt.compare(password, user.password);
+    if (!match) {
+      return res.render("user/login", { error: "Wrong password" });
+    }
+
+    // Save session
+    req.session.user = {
+      username: user.username,
+      role: user.role
+    };
+
+    // Redirect according to role
+    if (user.role === "landlord") {
+      res.redirect("/dashboard/landlord_dashboard");
+    } else {
+      res.redirect("/dashboard/tenant_dashboard");
+    }
+  });
+});
+
+/* ================= LOGOUT ================= */
+router.get("/logout", (req, res) => {
+  req.session.destroy(() => {
+    res.redirect("/");
+  });
+});
+
+/* ================= LANDLORD DASHBOARD ================= */
+router.get(
+  "/dashboard/landlord_dashboard",
+  isAuthenticated,
+  isLandlord,
+  (req, res) => {
+    const landlord = req.session.user.username;
+    const listings = listingModel.getByLandlord(landlord);
+
+    res.render("dashboard/landlord_dashboard", {
+      title: "Landlord Dashboard",
+      user: req.session.user,
+      activeListings: listings.filter(l => l.status === "Active").length,
+      pendingRequests: listings.filter(l => l.status === "Pending").length,
+      messages: 0,
+      listings
+    });
+  }
+);
+
+router.get(
+  "/dashboard/landlord/my_listings",
+  isAuthenticated,
+  isLandlord,
+  (req, res) => {
+    const landlord = req.session.user.username;
+    const listings = listingModel.getByLandlord(landlord);
+
+    res.render("dashboard/my_listings", {
+      title: "My Listings",
+      user: req.session.user,
+      listings
+    });
+  }
+);
+
+router.get(
+  "/dashboard/landlord/add_listing",
+  isAuthenticated,
+  isLandlord,
+  (req, res) => {
+    res.render("dashboard/add_listing", {
+      title: "Add Listing",
+      user: req.session.user
+    });
+  }
+);
+
+router.post(
+  "/dashboard/landlord/add_listing",
+  isAuthenticated,
+  isLandlord,
+  (req, res) => {
+    const landlord = req.session.user.username;
+    const { title, location, status } = req.body;
+
+    listingModel.add({
+      title,
+      location,
+      status,
+      landlord
+    });
+
+    res.redirect("/dashboard/landlord_dashboard");
+  }
+);
+
+/* ================= TENANT DASHBOARD ================= */
+router.get(
+  "/dashboard/tenant_dashboard",
+  isAuthenticated,
+  isTenant,
+  (req, res) => {
+    res.render("dashboard/tenant_dashboard", {
+      title: "Tenant Dashboard",
+      user: req.session.user,
+      savedListings: 0,
+      applicationsSent: 0,
+      messages: 0
+    });
+  }
+);
 
 module.exports = router;

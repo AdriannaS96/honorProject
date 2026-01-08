@@ -1,96 +1,184 @@
-/* nav */
-.navbar {
-  position: sticky;
-  top: 0;
-  z-index: 20;
+/* ===================================================== GLOBAL ===================================================== */
+body {
+    background-color: #ffffff;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
 }
 
-
-/* Hero Section */
-.bg-hero {
-  background-color: #007bff; 
-  /* background-image: url('path/to/image.jpg'); */
-  background-size: cover;
-  background-position: center;
-}
-.hero {
-  background: url('/images/hero-bg.jpg') no-repeat center center/cover;
-  height: 80vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.hero::after {
-  content: "";
-  position: absolute;
-  top:0; left:0; right:0; bottom:0;
-  background: rgba(0,0,0,0.5); 
-}
-
-.hero .container {
-  position: relative;
-  z-index: 2;
-}
-
-/* Featured Listings */
-#listings .card {
-  border: none;
-  border-radius: 15px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-  transition: transform 0.3s;
-}
-
-#listings .card:hover {
-  transform: translateY(-5px);
-}
-
-/* Buttons */
-.btn-primary {
-  background-color: #007bff;
-  border: none;
-  transition: all 0.3s;
-}
-
-.btn-primary:hover {
-  background-color: #0056b3;
-  transform: translateY(-2px);
-}
-
-/* Contact Form */
-#contact form input,
-#contact form textarea {
-  border-radius: 10px;
-  border: 1px solid #ced4da;
-}
-
-/* Typography */
 h2 {
-  font-weight: 600;
+    font-weight: 600;
 }
 
 .lead {
-  font-size: 1.25rem;
+    font-size: 1.25rem;
 }
 
-/*footer*/
-footer {
-  background-color: #343a40; 
-  color: #f8f9fa;
-  padding: 2rem 0;
+/* ===================================================== NAVBAR ===================================================== */
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 110;
+    transition: all 0.3s ease;
+    background-color: #fff;
 }
-footer a {
-  color: #f8f9fa;
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    margin-left: 20px;
 }
-footer a:hover {
-  color: #adb5bd;
+
+.navbar .nav-link {
+    font-weight: 500;
+    margin-left: 10px;
 }
-/*/ button */
+
+.navbar .btn {
+    border-radius: 20px;
+}
+
+.navbar .dropdown-menu {
+    z-index: 1100; /* ponad sidebar */
+}
+
+/* ===================================================== HERO SECTION ===================================================== */
+.hero {
+    height: 90vh;
+    background: linear-gradient(
+            rgba(0, 0, 0, 0.55),
+            rgba(0, 0, 0, 0.55)
+        ),
+        url("/images/hero-bg.jpg") center / cover no-repeat;
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #fff;
+}
+
+/* ===================================================== LISTINGS ===================================================== */
+#listings .card {
+    border: none;
+    border-radius: 18px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+#listings .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* ===================================================== BUTTONS ===================================================== */
 .btn-primary {
-  background-color: #007bff;
-  border: none;
+    background-color: #007bff;
+    border: none;
+    transition: all 0.3s ease;
 }
+
 .btn-primary:hover {
-  background-color: #0056b3;
+    background-color: #0056b3;
+    transform: translateY(-2px);
+}
+
+/* ===================================================== FOOTER ===================================================== */
+footer {
+    background-color: #343a40;
+    color: #f8f9fa;
+    padding: 2rem 0;
+    text-align: center;
+}
+
+footer a {
+    color: #f8f9fa;
+}
+
+footer a:hover {
+    color: #adb5bd;
+}
+
+footer .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    font-size: 1.2rem;
+    margin-top: 10px;
+}
+
+/* ===================================================== DASHBOARD LAYOUT ===================================================== */
+.dashboard-container {
+    display: flex;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    position: relative;
+}
+
+/* Sidebar */
+.sidebar {
+    width: 250px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    min-height: 100vh;
+    background-color: #f8f9fa;
+    border-right: 1px solid #dee2e6;
+    padding-top: 60px;
+    z-index: 100;
+}
+
+.sidebar .nav-link {
+    color: #333;
+    font-weight: 500;
+    padding: 12px 20px;
+    border-radius: 6px;
+    margin-bottom: 4px;
+    transition: background 0.3s, color 0.3s;
+}
+
+.sidebar .nav-link.active,
+.sidebar .nav-link:hover {
+    background-color: #007bff;
+    color: #fff;
+}
+
+/* Main content */
+.main-content {
+    margin-left: 250px;
+    padding: 2rem;
+    flex: 1;
+}
+
+/* Dashboard cards */
+.card {
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* ===================================================== RESPONSIVE ===================================================== */
+@media (max-width: 768px) {
+    .dashboard-layout .navbar {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .sidebar {
+        position: relative;
+        width: 100%;
+        min-height: auto;
+    }
+
+    .main-content {
+        margin-left: 0;
+        padding: 1rem;
+    }
+
+    .navbar-brand {
+        margin-left: 0;
+        text-align: center;
+    }
 }
