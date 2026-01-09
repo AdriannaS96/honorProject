@@ -1,87 +1,160 @@
 {{> header}}
-<body>
-  <div class="dashboard-container">
 
-    <!-- Sidebar -->
-    <nav class="sidebar">
-      <ul class="nav flex-column">
-        <li class="nav-item">
-          <a class="nav-link" href="/dashboard/landlord_dashboard">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/dashboard/landlord/my_listings">My Listings</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link active" href="/dashboard/landlord/add_listing">Add Listing</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" href="/dashboard/landlord/messages">Messages</a>
-        </li>
-      </ul>
-    </nav>
+<div class="dashboard-container">
 
-    <!-- Main content -->
-    <main class="main-content">
-      <div class="d-flex justify-content-between align-items-center mb-3 border-bottom">
-        <h1 class="h2">Add New Listing</h1>
-      </div>
+  <!-- Sidebar -->
+  <nav class="sidebar">
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/landlord_dashboard">
+          <i class="bi bi-speedometer2"></i>
+          Dashboard
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/my_listings">
+          <i class="bi bi-house-door"></i>
+          My Listings
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link active" href="/dashboard/add_listing">
+          <i class="bi bi-plus-circle"></i>
+          Add Listing
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/messages">
+          <i class="bi bi-chat-dots"></i>
+          Messages
+        </a>
+      </li>
+    </ul>
+  </nav>
 
-      <div class="card mb-4">
-        <div class="card-body">
+  <!-- Main -->
+  <main class="main-content">
 
-          <form action="/dashboard/landlord/add_listing"
-                method="POST"
-                enctype="multipart/form-data">
+    <!-- Header -->
+    <div class="mb-4">
+      <h1 class="fw-bold">Add New Listing</h1>
+      <p class="text-muted mb-0">
+        Create a new property listing visible to tenants
+      </p>
+    </div>
 
-            <!-- Title -->
-            <div class="mb-3">
-              <label class="form-label">Title</label>
-              <input type="text" name="title" class="form-control" required>
-            </div>
+    <!-- Form card -->
+    <div class="add-listing-card">
 
-            <!-- Location -->
-            <div class="mb-3">
-              <label class="form-label">Location</label>
-              <input type="text" name="location" class="form-control" required>
-            </div>
+      <form action="/dashboard/landlord/add_listing"
+            method="POST"
+            enctype="multipart/form-data">
 
-            <!-- Status -->
-            <div class="mb-3">
-              <label class="form-label">Status</label>
-              <select name="status" class="form-select" required>
-                <option value="Active">Active</option>
-                <option value="Pending">Pending</option>
-                <option value="Closed">Closed</option>
-              </select>
-            </div>
+        <div class="row g-4">
 
-            <!-- Images -->
-            <div class="mb-4">
-              <label class="form-label">Listing Images</label>
+          <!-- Title -->
+          <div class="col-md-6">
+            <label class="form-label">Listing Title</label>
+            <input
+              type="text"
+              name="title"
+              class="form-control"
+              placeholder="e.g. Modern 2-bedroom apartment"
+              required
+            >
+          </div>
+
+          <!-- Location -->
+          <div class="col-md-6">
+            <label class="form-label">Location</label>
+            <input
+              type="text"
+              name="location"
+              class="form-control"
+              placeholder="City, street or area"
+              required
+            >
+          </div>
+
+          <!-- Status -->
+          <div class="col-md-6">
+            <label class="form-label">Status</label>
+            <select name="status" class="form-select" required>
+              <option value="active">Active</option>
+              <option value="pending">Pending</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
+          <!-- Price -->
+          <div class="col-md-6">
+            <label class="form-label">Monthly Rent (£)</label>
+            <input
+              type="number"
+              name="price"
+              class="form-control"
+              placeholder="e.g. 1200"
+              required
+            >
+          </div>
+
+          <!-- Description -->
+          <div class="col-12">
+            <label class="form-label">Description</label>
+            <textarea
+              name="description"
+              rows="4"
+              class="form-control"
+              placeholder="Describe the property, amenities, rules..."
+              required
+            ></textarea>
+          </div>
+
+          <!-- Images -->
+          <div class="col-12">
+            <label class="form-label">Listing Images</label>
+
+            <div class="image-upload-box">
               <input
                 type="file"
                 name="images"
-                class="form-control"
                 accept="image/*"
                 multiple
               >
-              <div class="form-text">
-                You can upload multiple images (JPG, PNG). Recommended size: 1200×800.
+              <div class="upload-hint">
+                <i class="bi bi-cloud-arrow-up"></i>
+                <p class="mb-0 fw-semibold">Click or drag images here</p>
+                <small class="text-muted">
+                  JPG, PNG · Recommended 1200×800
+                </small>
               </div>
             </div>
+          </div>
 
-            <button type="submit" class="btn btn-primary">
-              Add Listing
+          <!-- Actions -->
+          <div class="col-12 d-flex justify-content-end gap-2 mt-3">
+            <a href="/dashboard/landlord/my_listings" class="btn btn-outline-secondary">
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary px-4">
+              <i class="bi bi-check-lg"></i>
+              Publish Listing
             </button>
-
-          </form>
+          </div>
 
         </div>
-      </div>
-    </main>
-  </div>
+      </form>
 
-  {{> footer}}
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    </div>
+
+  </main>
+</div>
+
+{{> footer}}
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

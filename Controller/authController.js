@@ -1,3 +1,4 @@
+//Controller/authController.js
 const UserDAO = require("../models/userModel");
 const bcrypt = require("bcrypt");
 

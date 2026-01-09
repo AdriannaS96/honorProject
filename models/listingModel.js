@@ -1,3 +1,4 @@
+//models/listingModel.js
 class Listing {
     constructor() {
         // Tymczasowo trzymamy listings w pamięci

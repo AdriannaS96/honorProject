@@ -2,11 +2,16 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-// Modele
+// MODELS
 const listingModel = require("../models/listingModel");
 const userDAO = require("../models/userModel");
+const messagesModel = require("../models/messagesModel");
 
-// Middleware
+// CONTROLLERS
+const messagesController = require("../Controller/messagesController"); 
+// ⬆️ UWAGA: folder nazywa się "Controller", więc tak MUSI być
+
+// MIDDLEWARE
 const { isAuthenticated, isLandlord, isTenant } = require("../auth/auth");
 
 /* ================= HOME ================= */
@@ -27,17 +32,13 @@ router.get("/about", (req, res) => {
 
 /* ================= REGISTER ================= */
 router.get("/register", (req, res) => {
-  res.render("user/register", {
-    title: "Register"
-  });
+  res.render("user/register", { title: "Register" });
 });
 
 router.post("/register", async (req, res) => {
   const { username, password, role } = req.body;
 
-  // if user exists
   userDAO.findByUsername(username, async (err, existingUser) => {
-    if (err) return res.send("Database error");
     if (existingUser) {
       return res.render("user/register", {
         title: "Register",
@@ -45,28 +46,21 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    // New User
-    try {
-      await userDAO.create(username, password, role);
-      res.redirect("/login");
-    } catch (err) {
-      res.send("Registration error:" + err.message);
-    }
+    await userDAO.create(username, password, role);
+    res.redirect("/login");
   });
 });
 
 /* ================= LOGIN ================= */
 router.get("/login", (req, res) => {
-  res.render("user/login", {
-    title: "Login"
-  });
+  res.render("user/login", { title: "Login" });
 });
 
 router.post("/login", (req, res) => {
   const { username, password } = req.body;
 
   userDAO.findByUsername(username, async (err, user) => {
-    if (err || !user) {
+    if (!user) {
       return res.render("user/login", { error: "User not found" });
     }
 
@@ -75,13 +69,11 @@ router.post("/login", (req, res) => {
       return res.render("user/login", { error: "Wrong password" });
     }
 
-    // Save session
     req.session.user = {
       username: user.username,
       role: user.role
     };
 
-    // Redirect according to role
     if (user.role === "landlord") {
       res.redirect("/dashboard/landlord_dashboard");
     } else {
@@ -92,12 +84,10 @@ router.post("/login", (req, res) => {
 
 /* ================= LOGOUT ================= */
 router.get("/logout", (req, res) => {
-  req.session.destroy(() => {
-    res.redirect("/");
-  });
+  req.session.destroy(() => res.redirect("/"));
 });
 
-/* ================= LANDLORD DASHBOARD ================= */
+/* ================= LANDLORD ================= */
 router.get(
   "/dashboard/landlord_dashboard",
   isAuthenticated,
@@ -111,8 +101,7 @@ router.get(
       user: req.session.user,
       activeListings: listings.filter(l => l.status === "Active").length,
       pendingRequests: listings.filter(l => l.status === "Pending").length,
-      messages: 0,
-      listings
+      messages: 0
     });
   }
 );
@@ -150,21 +139,20 @@ router.post(
   isAuthenticated,
   isLandlord,
   (req, res) => {
-    const landlord = req.session.user.username;
     const { title, location, status } = req.body;
 
     listingModel.add({
       title,
       location,
       status,
-      landlord
+      landlord: req.session.user.username
     });
 
     res.redirect("/dashboard/landlord_dashboard");
   }
 );
 
-/* ================= TENANT DASHBOARD ================= */
+/* ================= TENANT ================= */
 router.get(
   "/dashboard/tenant_dashboard",
   isAuthenticated,
@@ -178,6 +166,52 @@ router.get(
       messages: 0
     });
   }
+);
+
+/* ================= MESSAGES ================= */
+
+/* LISTA ROZMÓW */
+router.get("/dashboard/messages", isAuthenticated, (req, res) => {
+  const me = req.session.user.username;
+  const conversations = messagesModel.getUserConversations(me);
+
+  res.render("dashboard/messages", {
+    title: "Messages",
+    user: req.session.user,
+    conversations: conversations.map(u => ({
+      nickname: u,
+      initials: u.slice(0, 2).toUpperCase()
+    })),
+    activeChat: null,
+    messages: []
+  });
+});
+
+/* KONKRETNA ROZMOWA */
+router.get("/dashboard/messages/:username", isAuthenticated, (req, res) => {
+  const me = req.session.user.username;
+  const otherUser = req.params.username;
+
+  const conversations = messagesModel.getUserConversations(me);
+  const messages = messagesModel.getConversation(me, otherUser);
+
+  res.render("dashboard/messages", {
+    title: "Messages",
+    user: req.session.user,
+    conversations: conversations.map(u => ({
+      nickname: u,
+      initials: u.slice(0, 2).toUpperCase()
+    })),
+    activeChat: otherUser,
+    messages
+  });
+});
+
+/* WYSYŁANIE WIADOMOŚCI */
+router.post(
+  "/dashboard/messages/send",
+  isAuthenticated,
+  messagesController.sendMessage
 );
 
 module.exports = router;
