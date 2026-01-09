@@ -1,29 +1,32 @@
 {{> header}}
 
 <!-- HERO -->
-<header class="hero text-white text-center">
-  <div class="container">
-    <span class="badge bg-primary mb-3">Trusted Housing Platform</span>
-    <h1 class="display-4 fw-bold mb-3">Find Your Perfect Home</h1>
-    <p class="lead mb-4">
+<header class="hero d-flex align-items-center justify-content-center text-center">
+  <div class="hero-overlay"></div> <!-- overlay gradient -->
+  <div class="container position-relative text-white">
+    <span class="badge bg-primary mb-3 shadow-sm animate__animated animate__fadeInDown">Trusted Housing Platform</span>
+    <h1 class="display-4 fw-bold mb-3 animate__animated animate__fadeInDown animate__delay-1s">Find Your Perfect Home</h1>
+    <p class="lead mb-4 animate__animated animate__fadeInUp animate__delay-2s">
       Browse apartments, connect with landlords, and move in faster.
     </p>
-    <a href="#listings" class="btn btn-primary btn-lg px-5">
+    <a href="#listings" class="btn btn-primary btn-lg px-5 shadow-sm animate__animated animate__fadeInUp animate__delay-3s">
       Browse Listings
     </a>
   </div>
 </header>
 
-<!-- LISTINGS -->
+<!-- FEATURED LISTINGS -->
 <section id="listings" class="container my-5">
   <h2 class="text-center fw-bold mb-5">Featured Listings</h2>
-
   <div class="row g-4">
     {{#featuredListings}}
       <div class="col-md-4">
         {{> listing-card}}
       </div>
     {{/featuredListings}}
+  </div>
+  <div class="text-center mt-4">
+    <a href="/listings" class="btn btn-primary btn-lg">View All Listings</a>
   </div>
 </section>
 
@@ -32,14 +35,34 @@
   <div class="container">
     <div class="row justify-content-center text-center">
       <div class="col-md-8">
-        <h2 class="fw-bold mb-3">Why HousingPlatform?</h2>
-        <p class="text-muted fs-5">
+        <h2 class="fw-bold mb-3 animate__animated animate__fadeIn">Why HousingPlatform?</h2>
+        <p class="text-muted fs-5 mb-4 animate__animated animate__fadeIn animate__delay-1s">
           We simplify the rental process by connecting tenants and landlords
           through a secure, modern platform.
         </p>
+        <div class="d-flex justify-content-center gap-3 flex-wrap">
+          <div class="card border-0 shadow-sm p-3 text-center animate__animated animate__fadeInUp animate__delay-2s" style="width: 14rem;">
+            <i class="fas fa-shield-alt fa-2x text-primary mb-2"></i>
+            <h5 class="fw-bold">Secure</h5>
+            <p class="text-muted small">All transactions and communications are encrypted.</p>
+          </div>
+          <div class="card border-0 shadow-sm p-3 text-center animate__animated animate__fadeInUp animate__delay-3s" style="width: 14rem;">
+            <i class="fas fa-bolt fa-2x text-primary mb-2"></i>
+            <h5 class="fw-bold">Fast</h5>
+            <p class="text-muted small">Find and rent your home quickly with our platform.</p>
+          </div>
+          <div class="card border-0 shadow-sm p-3 text-center animate__animated animate__fadeInUp animate__delay-4s" style="width: 14rem;">
+            <i class="fas fa-users fa-2x text-primary mb-2"></i>
+            <h5 class="fw-bold">Connected</h5>
+            <p class="text-muted small">Directly communicate with landlords and tenants.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
 
 {{> footer}}
+
+<!-- Animate.css for animations -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>

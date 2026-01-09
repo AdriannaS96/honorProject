@@ -1,40 +1,89 @@
-{{>header}}
-{{>nav}}
-<main>
-    <!-- Section 1: Image on the Left -->
-    <section id="about1" class="py-5">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-6">
-            <h2 class="display-4 mb-4">Our Vison</h2>
-            <p class="lead">Our vision is to create a sustainable network of pantries providing low-cost food and wrap-around services, empowering communities to help themselves. The Pantry will support upskilling through volunteering and employability opportunities, utilizing the shop as a training facility.</p>
-<p>The Scottish Pantry Network will be the voice for change, supporting pantries with compliance, lobbying, and links with food suppliers.</p>
-          </div>
-          <div class="col-lg-6">
-            <img src="img/pantry41.jpg" alt="O nas" class="img-fluid rounded">
-          </div>
-        </div>
-      </div>
-    </section>
+{{> header}}
 
-  <!-- Section 2: Image on the Right -->
-<section id="about2" class="bg-light py-5">
+<!-- ABOUT HERO -->
+<section class="about-hero text-white">
   <div class="container">
-    <div class="row">
-      <div class="col-lg-6 order-lg-2">
-        <h2 class="display-4 mb-4">Our Mission</h2>
-        <p class="lead">Our mission is to create inclusive communities where everyone has access to affordable and nutritious food. Through our initiatives, we aim to address food insecurity and promote healthy living.</p>
-        <p>We believe that everyone deserves access to fresh and wholesome food options. By fostering partnerships and community engagement, we strive to make a positive impact on people's lives.</p>
+    <div class="row align-items-center">
+      <div class="col-md-6">
+        <span class="badge bg-primary mb-3">About Us</span>
+        <h1 class="display-5 fw-bold mb-3">
+          Making Housing Simple & Accessible
+        </h1>
+        <p class="lead">
+          HousingPlatform connects tenants and landlords through a secure,
+          modern, and easy-to-use platform.
+        </p>
       </div>
-      <div class="col-lg-6 order-lg-1">
-        <img src="img/pantry.jpg" alt="Nasza misja" class="img-fluid rounded">
+
+      <div class="col-md-6 text-center">
+        <img
+          src="/images/about-illustration.png"
+          alt="About HousingPlatform"
+          class="img-fluid about-hero-image"
+        />
       </div>
     </div>
   </div>
 </section>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
-{{>footer}} 
+<!-- MISSION -->
+<section class="container py-5">
+  <div class="row text-center justify-content-center">
+    <div class="col-md-8">
+      <h2 class="fw-bold mb-3">Our Mission</h2>
+      <p class="text-muted fs-5">
+        We aim to simplify the rental process by eliminating unnecessary steps,
+        improving communication, and providing transparency for everyone.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="bg-light py-5">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="value-card text-center p-4">
+          <i class="bi bi-shield-check value-icon"></i>
+          <h5 class="fw-bold mt-3">Security</h5>
+          <p class="text-muted">
+            We prioritize data protection and safe communication.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="value-card text-center p-4">
+          <i class="bi bi-lightning-charge value-icon"></i>
+          <h5 class="fw-bold mt-3">Speed</h5>
+          <p class="text-muted">
+            Find and rent properties faster than ever before.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="value-card text-center p-4">
+          <i class="bi bi-people value-icon"></i>
+          <h5 class="fw-bold mt-3">Community</h5>
+          <p class="text-muted">
+            Connecting people and building trust on both sides.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="about-cta text-white text-center">
+  <div class="container">
+    <h2 class="fw-bold mb-3">Ready to find your next home?</h2>
+    <a href="/listings" class="btn btn-light btn-lg px-5">
+      Browse Listings
+    </a>
+  </div>
+</section>
+
+{{> footer}}

@@ -38,21 +38,31 @@ h2 {
 }
 
 .navbar .dropdown-menu {
-    z-index: 1100; /* ponad sidebar */
+    z-index: 1100;
 }
 
 /* ===================================================== HERO SECTION ===================================================== */
 .hero {
+    position: relative;
     height: 90vh;
-    background: linear-gradient(
-            rgba(0, 0, 0, 0.55),
-            rgba(0, 0, 0, 0.55)
-        ),
-        url("/images/hero-bg.jpg") center / cover no-repeat;
+    background: url("/images/hero-modern.jpg") center / cover no-repeat;
     display: flex;
     align-items: center;
+    justify-content: center;
     text-align: center;
-    color: #fff;
+    overflow: hidden;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(rgba(0,0,0,0.4), rgba(0,0,0,0.4));
+    z-index: 0;
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
 }
 
 /* ===================================================== LISTINGS ===================================================== */
