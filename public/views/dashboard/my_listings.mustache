@@ -2,35 +2,43 @@
 
 <div class="dashboard-container">
 
-  <!-- Sidebar -->
+  <!-- SIDEBAR -->
   <nav class="sidebar">
+    <h4 class="sidebar-title">Landlord</h4>
     <ul class="nav flex-column">
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard/landlord">
+        <a class="nav-link" href="/dashboard/landlord_dashboard">
           <i class="bi bi-speedometer2"></i>
           Dashboard
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/dashboard/my_listings">
+        <a class="nav-link" href="/dashboard/landlord/my_listings">
           <i class="bi bi-house-door"></i>
           My Listings
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard/add_listing">
+        <a class="nav-link" href="/dashboard/landlord/add_listing">
           <i class="bi bi-plus-circle"></i>
           Add Listing
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard/messages">
+        <a class="nav-link active" href="/dashboard/landlord/messages">
           <i class="bi bi-chat-dots"></i>
           Messages
         </a>
       </li>
+      <li class="nav-item mt-3">
+        <a class="nav-link text-danger" href="/logout">
+          <i class="bi bi-box-arrow-right"></i>
+          Logout
+        </a>
+      </li>
     </ul>
   </nav>
+
 
   <!-- Main -->
   <main class="main-content">
