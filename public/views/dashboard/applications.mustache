@@ -1,0 +1,113 @@
+{{> header}}
+
+<div class="dashboard-container">
+
+  <!-- SIDEBAR -->
+  <nav class="sidebar">
+    <h4 class="sidebar-title">Tenant</h4>
+
+    <ul class="nav flex-column">
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/tenant_dashboard">
+          <i class="bi bi-speedometer2"></i>
+          Dashboard
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link active" href="/dashboard/applications">
+          <i class="bi bi-file-earmark-text"></i>
+          Applications
+        </a>
+      </li>
+
+      <li class="nav-item">
+        <a class="nav-link" href="/dashboard/messages">
+          <i class="bi bi-chat-dots"></i>
+          Messages
+        </a>
+      </li>
+
+      <li class="nav-item mt-3">
+        <a class="nav-link text-danger" href="/logout">
+          <i class="bi bi-box-arrow-right"></i>
+          Logout
+        </a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
+
+    <div class="dashboard-header">
+      <h2>My Applications 📄</h2>
+      <p class="text-muted">Track all your rental applications</p>
+    </div>
+
+    <!-- APPLICATION CARDS -->
+    <div class="applications-grid">
+
+      {{#applications}}
+      <div class="card application-card">
+        <div class="card-body">
+
+          <div class="d-flex justify-content-between align-items-start">
+            <div>
+              <h5 class="card-title">{{propertyTitle}}</h5>
+              <p class="text-muted mb-1">{{propertyLocation}}</p>
+              <span class="badge bg-secondary">{{status}}</span>
+            </div>
+            <div>
+              <small class="text-muted">{{submittedAt}}</small>
+            </div>
+          </div>
+
+          <div class="mt-3 d-flex gap-2">
+
+            <a href="/dashboard/tenant/application/{{id}}" class="btn btn-sm btn-outline-primary">
+              View
+            </a>
+
+            {{#statusPending}}
+            <button class="btn btn-sm btn-warning" disabled>
+              Waiting
+            </button>
+            {{/statusPending}}
+
+            {{#statusAccepted}}
+            <span class="btn btn-sm btn-success disabled">
+              Approved
+            </span>
+            {{/statusAccepted}}
+
+            {{#statusRejected}}
+            <span class="btn btn-sm btn-danger disabled">
+              Rejected
+            </span>
+            {{/statusRejected}}
+
+          </div>
+
+        </div>
+      </div>
+      {{/applications}}
+
+      {{^applications}}
+      <div class="text-center text-muted mt-5">
+        <i class="bi bi-inbox"></i><br>
+        You have not submitted any applications yet.
+      </div>
+      {{/applications}}
+
+    </div>
+
+  </main>
+</div>
+
+{{> footer}}
+
+<link
+  href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+  rel="stylesheet"
+/>

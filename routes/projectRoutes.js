@@ -152,6 +152,45 @@ router.post(
   }
 );
 
+/* ================= TENANT APPLICATIONS ================= */
+router.get(
+  "/dashboard/applications",
+  isAuthenticated,
+  isTenant,
+  (req, res) => {
+    const applications = [
+      {
+        id: 1,
+        propertyTitle: "2-Bedroom Apartment",
+        propertyLocation: "Dublin",
+        status: "Pending",
+        statusPending: true,
+        statusAccepted: false,
+        statusRejected: false,
+        submittedAt: "2026-01-09"
+      },
+      {
+        id: 2,
+        propertyTitle: "Studio Flat",
+        propertyLocation: "Cork",
+        status: "Accepted",
+        statusPending: false,
+        statusAccepted: true,
+        statusRejected: false,
+        submittedAt: "2026-01-08"
+      }
+    ];
+
+    res.render("dashboard/applications", {
+      title: "My Applications",
+      user: req.session.user,
+      applications
+    });
+  }
+);
+
+
+
 /* ================= TENANT ================= */
 router.get(
   "/dashboard/tenant_dashboard",
