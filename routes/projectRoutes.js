@@ -7,10 +7,6 @@ const listingModel = require("../models/listingModel");
 const userDAO = require("../models/userModel");
 const messagesModel = require("../models/messagesModel");
 
-// CONTROLLERS
-const messagesController = require("../Controller/messagesController"); 
-// ⬆️ UWAGA: folder nazywa się "Controller", więc tak MUSI być
-
 // MIDDLEWARE
 const { isAuthenticated, isLandlord, isTenant } = require("../auth/auth");
 
@@ -87,14 +83,14 @@ router.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
 
-/* ================= LANDLORD ================= */
+/* ================= LANDLORD DASHBOARD ================= */
 router.get(
   "/dashboard/landlord_dashboard",
   isAuthenticated,
   isLandlord,
   (req, res) => {
     const landlord = req.session.user.username;
-    const listings = listingModel.getByLandlord(landlord);
+    const listings = listingModel.getByLandlord(landlord) || [];
 
     res.render("dashboard/landlord_dashboard", {
       title: "Landlord Dashboard",
@@ -106,92 +102,7 @@ router.get(
   }
 );
 
-router.get(
-  "/dashboard/landlord/my_listings",
-  isAuthenticated,
-  isLandlord,
-  (req, res) => {
-    const landlord = req.session.user.username;
-    const listings = listingModel.getByLandlord(landlord);
-
-    res.render("dashboard/my_listings", {
-      title: "My Listings",
-      user: req.session.user,
-      listings
-    });
-  }
-);
-
-router.get(
-  "/dashboard/landlord/add_listing",
-  isAuthenticated,
-  isLandlord,
-  (req, res) => {
-    res.render("dashboard/add_listing", {
-      title: "Add Listing",
-      user: req.session.user
-    });
-  }
-);
-
-router.post(
-  "/dashboard/landlord/add_listing",
-  isAuthenticated,
-  isLandlord,
-  (req, res) => {
-    const { title, location, status } = req.body;
-
-    listingModel.add({
-      title,
-      location,
-      status,
-      landlord: req.session.user.username
-    });
-
-    res.redirect("/dashboard/landlord_dashboard");
-  }
-);
-
-/* ================= TENANT APPLICATIONS ================= */
-router.get(
-  "/dashboard/applications",
-  isAuthenticated,
-  isTenant,
-  (req, res) => {
-    const applications = [
-      {
-        id: 1,
-        propertyTitle: "2-Bedroom Apartment",
-        propertyLocation: "Dublin",
-        status: "Pending",
-        statusPending: true,
-        statusAccepted: false,
-        statusRejected: false,
-        submittedAt: "2026-01-09"
-      },
-      {
-        id: 2,
-        propertyTitle: "Studio Flat",
-        propertyLocation: "Cork",
-        status: "Accepted",
-        statusPending: false,
-        statusAccepted: true,
-        statusRejected: false,
-        submittedAt: "2026-01-08"
-      }
-    ];
-
-    res.render("dashboard/applications", {
-      title: "My Applications",
-      user: req.session.user,
-      applications
-    });
-  }
-);
-
-
-
-/* ================= TENANT ================= */
+/* ================= TENANT DASHBOARD ================= */
 router.get(
   "/dashboard/tenant_dashboard",
   isAuthenticated,
@@ -207,50 +118,120 @@ router.get(
   }
 );
 
+/* ================= TENANT APPLICATIONS ================= */
+router.get(
+  "/dashboard/applications",
+  isAuthenticated,
+  isTenant,
+  (req, res) => {
+    const applications = [
+      {
+        propertyTitle: "2-Bedroom Apartment",
+        propertyLocation: "Dublin",
+        status: "Pending",
+        statusPending: true,
+        submittedAt: "2026-01-09"
+      },
+      {
+        propertyTitle: "Studio Flat",
+        propertyLocation: "Cork",
+        status: "Accepted",
+        statusAccepted: true,
+        submittedAt: "2026-01-08"
+      }
+    ];
+
+    res.render("dashboard/applications", {
+      title: "My Applications",
+      user: req.session.user,
+      applications
+    });
+  }
+);
+
 /* ================= MESSAGES ================= */
 
-/* LISTA ROZMÓW */
 router.get("/dashboard/messages", isAuthenticated, (req, res) => {
   const me = req.session.user.username;
-  const conversations = messagesModel.getUserConversations(me);
 
-  res.render("dashboard/messages", {
-    title: "Messages",
-    user: req.session.user,
-    conversations: conversations.map(u => ({
+  messagesModel.getUserConversations(me, (err, users) => {
+    if (err) {
+      console.error(err);
+      users = [];
+    }
+
+    const conversations = users.map(u => ({
       nickname: u,
-      initials: u.slice(0, 2).toUpperCase()
-    })),
-    activeChat: null,
-    messages: []
+      initials: u.slice(0, 2).toUpperCase(),
+      isActive: false
+    }));
+
+    res.render("dashboard/messages", {
+      title: "Messages",
+      user: req.session.user,
+      conversations,
+      activeChat: null,
+      messages: []
+    });
   });
 });
 
-/* KONKRETNA ROZMOWA */
 router.get("/dashboard/messages/:username", isAuthenticated, (req, res) => {
   const me = req.session.user.username;
   const otherUser = req.params.username;
 
-  const conversations = messagesModel.getUserConversations(me);
-  const messages = messagesModel.getConversation(me, otherUser);
+  messagesModel.getUserConversations(me, (err, users) => {
+    if (err) {
+      console.error(err);
+      users = [];
+    }
 
-  res.render("dashboard/messages", {
-    title: "Messages",
-    user: req.session.user,
-    conversations: conversations.map(u => ({
+    const conversations = users.map(u => ({
       nickname: u,
-      initials: u.slice(0, 2).toUpperCase()
-    })),
-    activeChat: otherUser,
-    messages
+      initials: u.slice(0, 2).toUpperCase(),
+      isActive: u === otherUser
+    }));
+
+    messagesModel.getConversation(me, otherUser, (err, msgs) => {
+      if (err) {
+        console.error(err);
+        msgs = [];
+      }
+
+      const messages = msgs.map(m => ({
+        content: m.content,
+        isMine: m.from === me,
+        timestamp: new Date(m.createdAt).toLocaleString()
+      }));
+
+      res.render("dashboard/messages", {
+        title: "Messages",
+        user: req.session.user,
+        conversations,
+        activeChat: otherUser,
+        messages
+      });
+    });
   });
 });
 
-/* WYSYŁANIE WIADOMOŚCI */
-router.post(
-  "/dashboard/messages/send",
-  isAuthenticated,
-  messagesController.sendMessage
-);
+router.post("/dashboard/messages/send", isAuthenticated, (req, res) => {
+  const me = req.session.user.username;
+  const { to, content } = req.body;
 
-module.exports = router;
+  if (!to || !content) {
+    return res.status(400).send("Recipient and content are required");
+  }
+
+  messagesModel.sendMessage(me, to, content, (err) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Failed to send message");
+    }
+    res.redirect(`/dashboard/messages/${to}`);
+  });
+});
+
+
+/* ================= EXPORT ================= */
+module.exports = router; // <-- ważne!

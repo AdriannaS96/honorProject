@@ -1,46 +1,45 @@
-// models/messagesModel.js
+const Datastore = require("gray-nedb");
+const db = new Datastore({ filename: "messages.db", autoload: true });
 
-const messages = [];
 
-/*
-message = {
-  from: "username",
-  to: "username",
-  text: "hello",
-  timestamp: Date
+function getUserConversations(me, cb) {
+  db.find({ $or: [{ from: me }, { to: me }] }, (err, docs) => {
+    if (err) return cb(err);
+
+
+    const usersSet = new Set();
+    docs.forEach(d => {
+      if (d.from !== me) usersSet.add(d.from);
+      if (d.to !== me) usersSet.add(d.to);
+    });
+
+    cb(null, Array.from(usersSet));
+  });
 }
-*/
 
-function sendMessage(from, to, text) {
-  messages.push({
+
+function getConversation(me, otherUser, cb) {
+  db.find({
+    $or: [
+      { from: me, to: otherUser },
+      { from: otherUser, to: me }
+    ]
+  }).sort({ createdAt: 1 }).exec(cb);
+}
+
+function sendMessage(from, to, content, cb) {
+  const msg = {
     from,
     to,
-    text,
-    timestamp: new Date()
-  });
-}
+    content,
+    createdAt: new Date()
+  };
 
-function getConversation(user1, user2) {
-  return messages.filter(
-    m =>
-      (m.from === user1 && m.to === user2) ||
-      (m.from === user2 && m.to === user1)
-  );
-}
-
-function getUserConversations(username) {
-  const users = new Set();
-
-  messages.forEach(m => {
-    if (m.from === username) users.add(m.to);
-    if (m.to === username) users.add(m.from);
-  });
-
-  return Array.from(users);
+  db.insert(msg, cb);
 }
 
 module.exports = {
-  sendMessage,
+  getUserConversations,
   getConversation,
-  getUserConversations
+  sendMessage
 };
