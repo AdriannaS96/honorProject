@@ -65,13 +65,19 @@
       <div class="col-md-6 col-lg-4">
         <div class="listing-card">
 
-          <!-- Image -->
-          <div class="listing-image">
-            <img src="{{imageUrl}}" alt="{{title}}">
-            <span class="status-badge {{status}}">
-              {{status}}
-            </span>
-          </div>
+        <!-- Image -->
+<div class="listing-image">
+  {{#images}}
+    <img src="{{.}}" alt="{{title}}">
+  {{/images}}
+  {{^images}}
+    <img src="/placeholder.jpg" alt="No image">
+  {{/images}}
+  <span class="status-badge {{status}}">
+    {{status}}
+  </span>
+</div>
+
 
           <!-- Content -->
           <div class="listing-content">

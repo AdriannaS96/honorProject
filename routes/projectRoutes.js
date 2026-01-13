@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 
 // MODELS
+const upload = require("../auth/upload");
 const listingModel = require("../models/listingModel");
 const userDAO = require("../models/userModel");
 const messagesModel = require("../models/messagesModel");
@@ -125,35 +126,56 @@ router.get(
 
 /* ================= LANDLORD ADD LISTING ================= */
 router.get(
-  "/dashboard/landlord/add_listing",
-  isAuthenticated,
-  isLandlord,
-  (req, res) => {
-    res.render("dashboard/add_listing", {
-      title: "Add Listing",
-      user: req.session.user
-    });
-  }
+    "/dashboard/landlord/add_listing",
+    isAuthenticated,
+    isLandlord,
+    (req, res) => {
+        res.render("dashboard/add_listing", {
+            title: "Add Listing",
+            user: req.session.user
+        });
+    }
 );
 
+// Obsługa formularza z uploadem zdjęć
 router.post(
-  "/dashboard/landlord/add_listing",
-  isAuthenticated,
-  isLandlord,
-  (req, res) => {
-    const landlord = req.session.user.username;
-    const { title, location, price } = req.body;
+    "/dashboard/landlord/add_listing",
+    isAuthenticated,
+    isLandlord,
+    upload.array("images", 10), // max 10 plików
+    (req, res) => {
+        const { title, location, price, description, status } = req.body;
+        const landlord = req.session.user.username;
 
-    listingModel.createListing({
-      title,
-      location,
-      price,
-      landlord,
-      status: "Pending"
-    });
+        // Ścieżki do zdjęć
+        const images = req.files ? req.files.map(f => `/uploads/listings/${f.filename}`) : [];
 
-    res.redirect("/dashboard/landlord/my_listings");
-  }
+        listingModel.add({ title, location, price, description, status, landlord, images });
+
+        res.redirect("/dashboard/landlord/my_listings");
+    }
+);
+
+// Strona listingów landlord
+router.get(
+    "/dashboard/landlord/my_listings",
+    isAuthenticated,
+    isLandlord,
+    (req, res) => {
+        const listings = listingModel.getByLandlord(req.session.user.username);
+
+        res.render("dashboard/my_listings", {
+            title: "My Listings",
+            user: req.session.user,
+            listings: listings.map(l => {
+                // jeśli są zdjęcia, pokaż pierwsze jako główne
+                return {
+                    ...l,
+                    imageUrl: l.images && l.images.length > 0 ? l.images[0] : "/images/default.png"
+                };
+            })
+        });
+    }
 );
 
 /* ================= TENANT DASHBOARD ================= */
