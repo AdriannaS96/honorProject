@@ -89,12 +89,17 @@ router.get(
   "/dashboard/landlord_dashboard",
   isAuthenticated,
   isLandlord,
-  (req, res) => {
-    const landlord = req.session.user.username;
-    const listings = listingModel.getByLandlord(landlord) || [];
+  async (req, res) => {
+    try {
+      const landlord = req.session.user.username;
+      const listings = await listingModel.getByLandlord(landlord) || [];
 
-    messagesModel.countUnread(landlord, (err, unreadCount) => {
-      if (err) unreadCount = 0;
+      const unreadCount = await new Promise((resolve) => {
+        messagesModel.countUnread(landlord, (err, count) => {
+          if (err) return resolve(0);
+          resolve(count);
+        });
+      });
 
       res.render("dashboard/landlord_dashboard", {
         title: "Landlord Dashboard",
@@ -103,7 +108,10 @@ router.get(
         pendingRequests: listings.filter(l => l.status === "Pending").length,
         messages: unreadCount
       });
-    });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error loading dashboard");
+    }
   }
 );
 
@@ -112,70 +120,67 @@ router.get(
   "/dashboard/landlord/my_listings",
   isAuthenticated,
   isLandlord,
-  (req, res) => {
-    const landlord = req.session.user.username;
-    const listings = listingModel.getByLandlord(landlord) || [];
+  async (req, res) => {
+    try {
+      const listings = await listingModel.getByLandlord(req.session.user.username);
 
-    res.render("dashboard/my_listings", {
-      title: "My Listings",
-      user: req.session.user,
-      listings
-    });
+      res.render("dashboard/my_listings", {
+        title: "My Listings",
+        user: req.session.user,
+        listings: listings.map(l => ({
+          ...l,
+          imagesUrl: l.images && l.images.length > 0
+            ? l.images.map(img => img.url)
+            : []
+        }))
+      });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send("Error loading listings");
+    }
   }
 );
 
 /* ================= LANDLORD ADD LISTING ================= */
 router.get(
-    "/dashboard/landlord/add_listing",
-    isAuthenticated,
-    isLandlord,
-    (req, res) => {
-        res.render("dashboard/add_listing", {
-            title: "Add Listing",
-            user: req.session.user
-        });
-    }
+  "/dashboard/landlord/add_listing",
+  isAuthenticated,
+  isLandlord,
+  (req, res) => {
+    res.render("dashboard/add_listing", {
+      title: "Add Listing",
+      user: req.session.user
+    });
+  }
 );
 
 // Obsługa formularza z uploadem zdjęć
 router.post(
-    "/dashboard/landlord/add_listing",
-    isAuthenticated,
-    isLandlord,
-    upload.array("images", 10), // max 10 plików
-    (req, res) => {
-        const { title, location, price, description, status } = req.body;
-        const landlord = req.session.user.username;
+  "/dashboard/landlord/add_listing",
+  isAuthenticated,
+  isLandlord,
+  upload.array("images", 10),
+  async (req, res) => {
+    try {
+      const { title, location, price, description, status } = req.body;
+      const landlord = req.session.user.username;
 
-        // Ścieżki do zdjęć
-        const images = req.files ? req.files.map(f => `/uploads/listings/${f.filename}`) : [];
+      const images = req.files
+        ? req.files.map(f => ({
+            filename: f.filename,
+            url: `/uploads/listings/${f.filename}`,
+            uploadedAt: new Date()
+          }))
+        : [];
 
-        listingModel.add({ title, location, price, description, status, landlord, images });
+      await listingModel.add({ title, location, price, description, status, landlord, images });
 
-        res.redirect("/dashboard/landlord/my_listings");
+      res.redirect("/dashboard/landlord/my_listings");
+    } catch (err) {
+      console.error("Error adding listing", err);
+      res.status(500).send("Error adding listing");
     }
-);
-
-// Strona listingów landlord
-router.get(
-    "/dashboard/landlord/my_listings",
-    isAuthenticated,
-    isLandlord,
-    (req, res) => {
-        const listings = listingModel.getByLandlord(req.session.user.username);
-
-        res.render("dashboard/my_listings", {
-            title: "My Listings",
-            user: req.session.user,
-            listings: listings.map(l => {
-                // jeśli są zdjęcia, pokaż pierwsze jako główne
-                return {
-                    ...l,
-                    imageUrl: l.images && l.images.length > 0 ? l.images[0] : "/images/default.png"
-                };
-            })
-        });
-    }
+  }
 );
 
 /* ================= TENANT DASHBOARD ================= */

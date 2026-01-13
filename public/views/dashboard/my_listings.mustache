@@ -67,12 +67,12 @@
 
         <!-- Image -->
 <div class="listing-image">
-  {{#images}}
+  {{#imagesUrl}}
     <img src="{{.}}" alt="{{title}}">
-  {{/images}}
-  {{^images}}
+  {{/imagesUrl}}
+  {{^imagesUrl}}
     <img src="/placeholder.jpg" alt="No image">
-  {{/images}}
+  {{/imagesUrl}}
   <span class="status-badge {{status}}">
     {{status}}
   </span>

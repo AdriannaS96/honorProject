@@ -1,72 +1,56 @@
-//models/listingModel.js
-const fs = require("fs");
-const path = require("path");
+// models/listingModel.js
+const nedb = require("gray-nedb");
 
-class Listing {
-    constructor() {
-        this.listings = []; // pusta tablica, wszystko dodawane przez użytkownika
-        this.nextId = 1;    // do automatycznego numerowania listingów
-    }
+class ListingDAO {
+  constructor() {
+    this.db = new nedb({ filename: "listing.db", autoload: true });
+  }
 
-    // Pobierz wszystkie listingi
-    getAll() {
-        return this.listings;
-    }
+  // Dodaj listing
+  async add({ title, location, price, description, status, landlord, images }) {
+    const entry = {
+      title,
+      location,
+      price,
+      description,
+      status,
+      landlord,
+      images,          // [{ filename, url, uploadedAt }]
+      createdAt: new Date()
+    };
+    await this.db.insert(entry);
+    return entry;
+  }
 
-    // Pobierz listingi konkretnego landlord
-    getByLandlord(landlord) {
-        return this.listings.filter(l => l.landlord === landlord);
-    }
+  // Pobierz wszystkie listingi danego landlord
+  async getByLandlord(landlord) {
+    return new Promise((resolve, reject) => {
+      this.db.find({ landlord }).sort({ createdAt: -1 }).exec((err, docs) => {
+        if (err) reject(err);
+        else resolve(docs);
+      });
+    });
+  }
 
-    // Pobierz listing po id
-    getById(id) {
-        return this.listings.find(l => l.id === id);
-    }
+  // Pobierz listing po id
+  async getById(id) {
+    return new Promise((resolve, reject) => {
+      this.db.findOne({ _id: id }, (err, doc) => {
+        if (err) reject(err);
+        else resolve(doc);
+      });
+    });
+  }
 
-    // Dodaj nowy listing
-    add({ title, location, price, description, status, landlord, images }) {
-        const newListing = {
-            id: this.nextId++,
-            title,
-            location,
-            price,
-            description,
-            status,
-            landlord,
-            images, // tablica ścieżek do zdjęć
-            createdAt: new Date()
-        };
-        this.listings.push(newListing);
-        return newListing;
-    }
-
-    // Aktualizuj listing
-    update(id, data) {
-        const listing = this.getById(id);
-        if (!listing) return false;
-        Object.assign(listing, data);
-        return true;
-    }
-
-    // Usuń listing
-    remove(id) {
-        const index = this.listings.findIndex(l => l.id === id);
-        if (index === -1) return false;
-
-        // opcjonalnie: usuń pliki zdjęć z folderu
-        const listing = this.listings[index];
-        if (listing.images && listing.images.length > 0) {
-            listing.images.forEach(imgPath => {
-                const fullPath = path.join(__dirname, "..", "public", imgPath);
-                if (fs.existsSync(fullPath)) {
-                    fs.unlinkSync(fullPath);
-                }
-            });
-        }
-
-        this.listings.splice(index, 1);
-        return true;
-    }
+  // Usuń listing po id
+  async remove(id) {
+    return new Promise((resolve, reject) => {
+      this.db.remove({ _id: id }, {}, (err, numRemoved) => {
+        if (err) reject(err);
+        else resolve(numRemoved);
+      });
+    });
+  }
 }
 
-module.exports = new Listing();
+module.exports = new ListingDAO();
