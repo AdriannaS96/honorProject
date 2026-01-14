@@ -128,5 +128,25 @@ exports.updateListing = async (req, res) => {
     res.redirect("/dashboard/landlord/my_listings");
   }
 };
+exports.showListingDetails = async (req, res) => {
+  try {
+    const listingId = req.params.id;
+
+    const listing = await listingDAO.getById(listingId);
+
+    if (!listing) {
+      return res.status(404).render("404");
+    }
+
+    res.render("dashboard/details", {
+      title: listing.title,
+      listing
+    });
+
+  } catch (err) {
+    console.error("❌ showListingDetails error:", err);
+    res.status(500).send("Server error");
+  }
+};
 
 

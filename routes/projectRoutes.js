@@ -166,6 +166,11 @@ router.get(
   listingController.deleteListing
 );
 
+router.get(
+    "/dashboard/landlord/listing/:id",
+    listingController.showListingDetails
+);
+
 
 /* ================= LANDLORD ADD LISTING ================= */
 router.get(
