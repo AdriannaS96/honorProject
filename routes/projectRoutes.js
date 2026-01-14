@@ -142,6 +142,22 @@ router.get(
 );
 const listingController = require('../Controller/listingController');
 
+// EDIT listing form (GET)
+router.get(
+  "/dashboard/landlord/edit/:id",
+  isAuthenticated,
+  isLandlord,
+  listingController.showEditForm
+);
+// UPDATE listing (POST)
+router.post(
+  "/dashboard/landlord/edit/:id",
+  isAuthenticated,
+  isLandlord,
+  upload.array("images", 10), 
+  listingController.updateListing
+);
+
 // DELETE listing (landlord)
 router.get(
   "/dashboard/landlord/delete/:id",

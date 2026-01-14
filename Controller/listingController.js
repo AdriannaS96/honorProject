@@ -68,3 +68,65 @@ exports.deleteListing = async (req, res) => {
     res.redirect("/dashboard/landlord/my_listings");
   }
 };
+exports.showEditForm = async (req, res) => {
+  try {
+    const listingId = req.params.id;
+    const listing = await listingDAO.getById(listingId);
+
+    if (!listing) {
+      return res.redirect("/dashboard/landlord/my_listings");
+    }
+
+    res.render("dashboard/edit_listing", {
+      title: "Edit Listing",
+      user: req.session.user,
+      listing
+    });
+  } catch (err) {
+    console.error("❌ Show edit form error:", err);
+    res.redirect("/dashboard/landlord/my_listings");
+  }
+};
+
+exports.updateListing = async (req, res) => {
+  try {
+    const listingId = req.params.id;
+    const { title, location, price, description, status } = req.body;
+
+    const listing = await listingDAO.getById(listingId);
+    if (!listing) {
+      return res.redirect("/dashboard/landlord/my_listings");
+    }
+
+    // Obsługa nowych zdjęć
+    let images = listing.images || [];
+    if (req.files && req.files.length > 0) {
+      const newImages = req.files.map(f => ({
+        filename: f.filename,
+        url: `/uploads/listings/${f.filename}`,
+        uploadedAt: new Date()
+      }));
+      images = images.concat(newImages);
+    }
+
+
+    await new Promise((resolve, reject) => {
+      listingDAO.db.update(
+        { _id: listingId },
+        { $set: { title, location, price, description, status, images } },
+        {},
+        (err, numUpdated) => {
+          if (err) reject(err);
+          else resolve(numUpdated);
+        }
+      );
+    });
+
+    res.redirect("/dashboard/landlord/my_listings");
+  } catch (err) {
+    console.error("❌ Update listing error:", err);
+    res.redirect("/dashboard/landlord/my_listings");
+  }
+};
+
+
