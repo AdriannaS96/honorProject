@@ -1,9 +1,7 @@
 const Datastore = require("gray-nedb");
 const db = new Datastore({ filename: "messages.db", autoload: true });
 
-/**
- * Pobiera listę użytkowników, z którymi miałeś rozmowy
- */
+
 function getUserConversations(me, cb) {
   db.find({ $or: [{ from: me }, { to: me }] }, (err, docs) => {
     if (err) return cb(err);
@@ -18,9 +16,7 @@ function getUserConversations(me, cb) {
   });
 }
 
-/**
- * Pobiera wszystkie wiadomości między dwoma użytkownikami
- */
+
 function getConversation(me, otherUser, cb) {
   db.find({
     $or: [
@@ -31,7 +27,7 @@ function getConversation(me, otherUser, cb) {
 }
 
 /**
- * Wysyła wiadomość
+ * send messages
  */
 function sendMessage(from, to, content, cb) {
   const msg = {
@@ -39,14 +35,14 @@ function sendMessage(from, to, content, cb) {
     to,
     content,
     createdAt: new Date(),
-    read: false // flaga nieprzeczytanej wiadomości
+    read: false 
   };
 
   db.insert(msg, cb);
 }
 
 /**
- * Liczy nieprzeczytane wiadomości dla użytkownika
+ * unread messages 
  */
 function countUnread(username, cb) {
   db.find({ to: username, read: false }, (err, docs) => {
@@ -55,25 +51,21 @@ function countUnread(username, cb) {
   });
 }
 
-/**
- * Oznacza wszystkie wiadomości od innego użytkownika jako przeczytane
- */
+
 function markAsRead(from, to, cb) {
   db.update(
-    { from, to, read: false }, // tylko nieprzeczytane wiadomości od "from" do "to"
+    { from, to, read: false }, 
     { $set: { read: true } },
-    { multi: true }, // zmiana wielu rekordów naraz
+    { multi: true }, 
     cb
   );
 }
-/**
- * Oznacza wszystkie wiadomości do użytkownika jako przeczytane
- */
+
 function markAllAsRead(toUsername, cb) {
   db.update(
-    { to: toUsername, read: false }, // wszystkie nieprzeczytane wiadomości do użytkownika
+    { to: toUsername, read: false },
     { $set: { read: true } },
-    { multi: true }, // aktualizuje wiele dokumentów naraz
+    { multi: true },
     cb
   );
 }

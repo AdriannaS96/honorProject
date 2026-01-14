@@ -140,6 +140,16 @@ router.get(
     }
   }
 );
+const listingController = require('../Controller/listingController');
+
+// DELETE listing (landlord)
+router.get(
+  "/dashboard/landlord/delete/:id",
+  isAuthenticated,
+  isLandlord,
+  listingController.deleteListing
+);
+
 
 /* ================= LANDLORD ADD LISTING ================= */
 router.get(
@@ -154,7 +164,7 @@ router.get(
   }
 );
 
-// Obsługa formularza z uploadem zdjęć
+
 router.post(
   "/dashboard/landlord/add_listing",
   isAuthenticated,

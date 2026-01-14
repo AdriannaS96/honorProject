@@ -1,10 +1,9 @@
 const multer = require("multer");
 const path = require("path");
 
-// Gdzie będą zapisywane zdjęcia
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "public/uploads/listings"); // folder w /public
+    cb(null, "public/uploads/listings"); 
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1E9);
@@ -12,7 +11,6 @@ const storage = multer.diskStorage({
   }
 });
 
-// Filtrujemy tylko obrazy
 const fileFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image/")) {
     cb(null, true);

@@ -6,7 +6,7 @@ class ListingDAO {
     this.db = new nedb({ filename: "listing.db", autoload: true });
   }
 
-  // Dodaj listing
+  // add listing
   async add({ title, location, price, description, status, landlord, images }) {
     const entry = {
       title,
@@ -22,7 +22,6 @@ class ListingDAO {
     return entry;
   }
 
-  // Pobierz wszystkie listingi danego landlord
   async getByLandlord(landlord) {
     return new Promise((resolve, reject) => {
       this.db.find({ landlord }).sort({ createdAt: -1 }).exec((err, docs) => {
@@ -32,7 +31,6 @@ class ListingDAO {
     });
   }
 
-  // Pobierz listing po id
   async getById(id) {
     return new Promise((resolve, reject) => {
       this.db.findOne({ _id: id }, (err, doc) => {
@@ -42,7 +40,6 @@ class ListingDAO {
     });
   }
 
-  // Usuń listing po id
   async remove(id) {
     return new Promise((resolve, reject) => {
       this.db.remove({ _id: id }, {}, (err, numRemoved) => {

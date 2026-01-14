@@ -2,7 +2,7 @@
 
 <div class="dashboard-container">
 
-<!-- SIDEBAR -->
+  <!-- SIDEBAR -->
   <nav class="sidebar">
     <h4 class="sidebar-title">Landlord</h4>
     <ul class="nav flex-column">
@@ -19,13 +19,13 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" href="/dashboard/landlord/add_listing">
+        <a class="nav-link active" href="/dashboard/landlord/add_listing">
           <i class="bi bi-plus-circle"></i>
           Add Listing
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link active" href="/dashboard/landlord/messages">
+        <a class="nav-link" href="/dashboard/landlord/messages">
           <i class="bi bi-chat-dots"></i>
           Messages
         </a>
@@ -38,7 +38,8 @@
       </li>
     </ul>
   </nav>
-  <!-- Main -->
+
+  <!-- MAIN -->
   <main class="main-content">
 
     <!-- Header -->
@@ -49,12 +50,14 @@
       </p>
     </div>
 
-    <!-- Form card -->
+    <!-- Form -->
     <div class="add-listing-card">
 
-      <form action="/dashboard/landlord/add_listing"
-            method="POST"
-            enctype="multipart/form-data">
+      <form
+        action="/dashboard/landlord/add_listing"
+        method="POST"
+        enctype="multipart/form-data"
+      >
 
         <div class="row g-4">
 
@@ -124,9 +127,11 @@
               <input
                 type="file"
                 name="images"
+                id="imagesInput"
                 accept="image/*"
                 multiple
               >
+
               <div class="upload-hint">
                 <i class="bi bi-cloud-arrow-up"></i>
                 <p class="mb-0 fw-semibold">Click or drag images here</p>
@@ -135,14 +140,27 @@
                 </small>
               </div>
             </div>
+
+            <!-- IMAGE PREVIEW -->
+            <div
+              id="preview"
+              class="d-flex flex-wrap gap-2 mt-3"
+            ></div>
           </div>
 
           <!-- Actions -->
           <div class="col-12 d-flex justify-content-end gap-2 mt-3">
-            <a href="/dashboard/landlord/my_listings" class="btn btn-outline-secondary">
+            <a
+              href="/dashboard/landlord/my_listings"
+              class="btn btn-outline-secondary"
+            >
               Cancel
             </a>
-            <button type="submit" class="btn btn-primary px-4">
+
+            <button
+              type="submit"
+              class="btn btn-primary px-4"
+            >
               <i class="bi bi-check-lg"></i>
               Publish Listing
             </button>
@@ -150,17 +168,19 @@
 
         </div>
       </form>
-
     </div>
-
   </main>
 </div>
 
-{{> footer}}
+<!-- PREVIEW SCRIPT -->
+<script src="/js/imagePreview.js"></script>
 
+<!-- Icons -->
 <link
   href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
   rel="stylesheet"
 />
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+{{> footer}}
