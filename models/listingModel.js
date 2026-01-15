@@ -6,20 +6,19 @@ class ListingDAO {
     this.db = new nedb({ filename: "listing.db", autoload: true });
   }
 
-  // add listing
   async add({ title, location, price, description, status, landlord, images }) {
-    const entry = {
-      title,
-      location,
-      price,
-      description,
-      status,
-      landlord,
-      images,          // [{ filename, url, uploadedAt }]
-      createdAt: new Date()
-    };
+    const entry = { title, location, price, description, status, landlord, images, createdAt: new Date() };
     await this.db.insert(entry);
     return entry;
+  }
+
+  async getAll() {
+    return new Promise((resolve, reject) => {
+      this.db.find({}).sort({ createdAt: -1 }).exec((err, docs) => {
+        if (err) reject(err);
+        else resolve(docs);
+      });
+    });
   }
 
   async getByLandlord(landlord) {

@@ -2,6 +2,8 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
+const listingController = require("../Controller/listingController");
+
 // MODELS
 const upload = require("../auth/upload");
 const listingModel = require("../models/listingModel");
@@ -11,13 +13,19 @@ const messagesModel = require("../models/messagesModel");
 // MIDDLEWARE
 const { isAuthenticated, isLandlord, isTenant } = require("../auth/auth");
 
+
 /* ================= HOME ================= */
-router.get("/", (req, res) => {
-  res.render("index", {
-    title: "Home",
-    user: req.session.user || null
-  });
-});
+// router.get("/", (req, res) => {
+//   res.render("index", {
+//     title: "Home",
+//     user: req.session.user || null
+//   });
+// });
+
+router.get("/", listingController.showHome);
+
+// PUBLIC LISTING DETAILS
+router.get("/listing/:id", listingController.showListingDetailsPublic);
 
 /* ================= ABOUT ================= */
 router.get("/about", (req, res) => {
@@ -140,7 +148,6 @@ router.get(
     }
   }
 );
-const listingController = require('../Controller/listingController');
 
 // EDIT listing form (GET)
 router.get(
@@ -213,6 +220,21 @@ router.post(
     }
   }
 );
+/* ================= LISTINGS ================= */
+router.get("/listings", async (req, res) => {
+  try {
+    const listings = await listingModel.getAll();
+
+    res.render("listings", {
+      title: "Listings",
+      user: req.session.user || null,
+      listings
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading listings");
+  }
+});
 
 /* ================= TENANT DASHBOARD ================= */
 router.get(

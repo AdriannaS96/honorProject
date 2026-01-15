@@ -17,18 +17,23 @@
 
 <!-- FEATURED LISTINGS -->
 <section id="listings" class="container my-5">
-  <h2 class="text-center fw-bold mb-5">Featured Listings</h2>
-  <div class="row g-4">
+  <h2>Featured Listings</h2>
+  <div class="featured-listings d-flex flex-wrap gap-4">
     {{#featuredListings}}
-      <div class="col-md-4">
-        {{> listing-card}}
+      <div class="listing-card card shadow-sm" style="width: 18rem;">
+        <a href="/listing/{{id}}">
+          <img src="{{imageUrl}}" alt="{{title}}" class="card-img-top listing-main-img" />
+          <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">{{location}}</p>
+            <p class="card-text fw-bold">£{{price}}</p>
+          </div>
+        </a>
       </div>
     {{/featuredListings}}
   </div>
-  <div class="text-center mt-4">
-    <a href="/listings" class="btn btn-primary btn-lg">View All Listings</a>
-  </div>
 </section>
+
 
 <!-- ABOUT -->
 <section id="about" class="py-5 bg-light">

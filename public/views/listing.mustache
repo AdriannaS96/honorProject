@@ -1,0 +1,18 @@
+<h1>Available Listings</h1>
+
+{{#listings}}
+<div class="listing-card">
+  <h3>{{title}}</h3>
+  <p><strong>Location:</strong> {{location}}</p>
+  <p><strong>Price:</strong> €{{price}}</p>
+  <p>{{description}}</p>
+
+  <a href="/dashboard/landlord/listing/{{id}}">
+    View details
+  </a>
+</div>
+{{/listings}}
+
+{{^listings}}
+<p>No listings available yet.</p>
+{{/listings}}
