@@ -235,6 +235,33 @@ router.get("/listings", async (req, res) => {
     res.status(500).send("Error loading listings");
   }
 });
+/* ================= LISTING DETAILS ================= */
+router.get("/listing/:id", async (req, res) => {
+  try {
+    const listing = await listingModel.findById(req.params.id);
+
+    if (!listing) {
+      return res.status(404).send("Listing not found");
+    }
+
+    if (listing.images && listing.images.length > 0) {
+      listing.images = listing.images.map((img, index) => ({
+        url: img.url,
+        isFirst: index === 0
+      }));
+    }
+
+    res.render("listing_public_details", {
+      title: listing.title,
+      user: req.session.user || null,
+      listing
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Error loading listing details");
+  }
+});
+
 
 /* ================= TENANT DASHBOARD ================= */
 router.get(

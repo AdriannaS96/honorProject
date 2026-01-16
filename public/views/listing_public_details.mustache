@@ -1,35 +1,66 @@
 {{> header}}
 
-<section class="container my-5">
+<div class="container my-5">
   <div class="row">
+    <!-- LEWA KOLUMNA: Galeria -->
     <div class="col-md-6">
-      {{#listing.images}}
-        <img src="{{url}}" alt="{{../listing.title}}" class="img-fluid mb-3" />
-        {{#@first}}
-          <!-- pokazujemy tylko pierwsze zdjęcie jako główne -->
-        {{/@first}}
-      {{/listing.images}}
-      {{^listing.images}}
-        <img src="/images/default-house.jpg" alt="No Image" class="img-fluid mb-3" />
-      {{/listing.images}}
+
+      {{#listing.images.length}}
+      <div id="listingCarousel" class="carousel slide" data-bs-ride="carousel">
+        <div class="carousel-inner">
+          {{#listing.images}}
+          <div class="carousel-item {{#isFirst}}active{{/isFirst}}">
+            <img src="{{url}}" class="d-block w-100 img-fluid rounded" alt="{{../listing.title}}">
+          </div>
+          {{/listing.images}}
+        </div>
+
+        <!-- Kontrolki prev/next -->
+        <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Previous</span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+          <span class="visually-hidden">Next</span>
+        </button>
+
+        <!-- Miniaturki -->
+        <div class="d-flex justify-content-center mt-3">
+          {{#listing.images}}
+          <img src="{{url}}" class="img-thumbnail mx-1 thumb-img" style="width:60px; cursor:pointer;" data-bs-target="#listingCarousel" data-bs-slide-to="{{@index}}" />
+          {{/listing.images}}
+        </div>
+      </div>
+      {{/listing.images.length}}
+
+      {{^listing.images.length}}
+        <img src="/images/default-house.jpg" alt="No Image" class="img-fluid rounded">
+      {{/listing.images.length}}
+
     </div>
+
+    <!-- PRAWA KOLUMNA: Szczegóły -->
     <div class="col-md-6">
       <h1>{{listing.title}}</h1>
       <p class="text-muted">{{listing.location}}</p>
-      <h3 class="fw-bold">€{{listing.price}}</h3>
+      <h3 class="fw-bold">£{{listing.price}}</h3>
       <p>{{listing.description}}</p>
       <p>Status: <span class="badge bg-info">{{listing.status}}</span></p>
 
       {{#user}}
-        {{#isOwner}}
+        {{#listing.isOwner}}
           <a href="/dashboard/landlord/edit/{{listing._id}}" class="btn btn-warning me-2">Edit Listing</a>
           <a href="/dashboard/landlord/delete/{{listing._id}}" class="btn btn-danger">Delete Listing</a>
-        {{/isOwner}}
+        {{/listing.isOwner}}
       {{/user}}
 
       <a href="/contact?landlord={{listing.landlord}}" class="btn btn-primary mt-3">Contact Landlord</a>
     </div>
+
   </div>
-</section>
+</div>
 
 {{> footer}}
+
+<script src="/js/listing-carousel.js"></script>

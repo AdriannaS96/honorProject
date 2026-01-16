@@ -8,7 +8,6 @@ exports.showHome = async (req, res) => {
   try {
     const listings = await listingDAO.getAll();
 
-    // jedno główne zdjęcie dla homepage
     const featuredListings = listings.map(l => ({
       id: l._id || l.id, 
       title: l.title,
@@ -65,7 +64,6 @@ exports.deleteListing = async (req, res) => {
     const listing = await listingDAO.getById(listingId);
     if (!listing) return res.redirect('/dashboard/landlord/my_listings');
 
-    // usuń zdjęcia z dysku
     if (listing.images && listing.images.length > 0) {
       listing.images.forEach(img => {
         const filePath = path.join(__dirname, '..', 'public', img.url);
@@ -163,12 +161,24 @@ exports.showListingDetailsPublic = async (req, res) => {
 
     if (!listing) return res.status(404).render('404');
 
-    // Sprawdzenie, czy aktualny użytkownik jest właścicielem
+    if (listing.images && listing.images.length > 0) {
+      const seen = new Set();
+      listing.images = listing.images
+        .filter(img => {
+          if (seen.has(img.url)) return false;
+          seen.add(img.url);
+          return true;
+        })
+        .map((img, index) => ({
+          url: img.url,
+          isFirst: index === 0
+        }));
+    }
     const isOwner = req.session.user && req.session.user.username === listing.landlord;
 
     res.render('listing_public_details', {
       title: listing.title,
-      listing: { ...listing, isOwner }, // przekazujemy flagę do widoku
+      listing: { ...listing, isOwner },
       user: req.session.user || null
     });
   } catch (err) {
