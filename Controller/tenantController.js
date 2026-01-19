@@ -6,7 +6,6 @@ exports.dashboard = async (req, res) => {
   try {
     const tenant = req.session.user.username;
 
-    // 1️⃣ pobierz zapisane ID
     const savedIds = await new Promise((resolve) => {
       userDAO.getSavedListings(tenant, (err, ids) => {
         if (err) resolve([]);
@@ -14,14 +13,14 @@ exports.dashboard = async (req, res) => {
       });
     });
 
-    // 2️⃣ pobierz wszystkie listingi
+
     const allListings = await listingDAO.getAll();
 
-    // 3️⃣ filtr + mapowanie do kart
+
     const savedListings = allListings
       .filter(l => savedIds.includes(l._id))
       .map(l => ({
-        id: l._id,
+        _id: l._id,           
         title: l.title,
         location: l.location,
         price: l.price,
