@@ -2,7 +2,6 @@
 
 <div class="container my-5">
   <div class="row">
-    <!-- LEWA KOLUMNA: Galeria -->
     <div class="col-md-6">
 
       {{#listing.images.length}}
@@ -15,7 +14,7 @@
           {{/listing.images}}
         </div>
 
-        <!-- Kontrolki prev/next -->
+        <!-- prev/next -->
         <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
           <span class="carousel-control-prev-icon" aria-hidden="true"></span>
           <span class="visually-hidden">Previous</span>
@@ -25,7 +24,6 @@
           <span class="visually-hidden">Next</span>
         </button>
 
-        <!-- Miniaturki -->
         <div class="d-flex justify-content-center mt-3">
           {{#listing.images}}
           <img src="{{url}}" class="img-thumbnail mx-1 thumb-img" style="width:60px; cursor:pointer;" data-bs-target="#listingCarousel" data-bs-slide-to="{{@index}}" />
@@ -40,7 +38,6 @@
 
     </div>
 
-    <!-- PRAWA KOLUMNA: Szczegóły -->
     <div class="col-md-6">
       <h1>{{listing.title}}</h1>
       <p class="text-muted">{{listing.location}}</p>
@@ -55,7 +52,10 @@
         {{/listing.isOwner}}
       {{/user}}
 
-      <a href="/contact?landlord={{listing.landlord}}" class="btn btn-primary mt-3">Contact Landlord</a>
+    <a href="/dashboard/messages/{{listing.landlord}}" class="btn btn-primary mt-3">
+  Contact Landlord
+</a>
+
     </div>
 
   </div>
