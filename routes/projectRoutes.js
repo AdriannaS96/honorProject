@@ -261,27 +261,84 @@ router.get("/listing/:id", async (req, res) => {
     res.status(500).send("Error loading listing details");
   }
 });
+router.get("/listing/:id", listingController.showListingDetailsPublic);
 
+// POST – save / unsave listing
+router.post("/listing/:id/save", (req, res) => {
+  if (!req.session.user || req.session.user.role !== "tenant") {
+    return res.redirect("/login");
+  }
 
+  const listingId = req.params.id;
+  const username = req.session.user.username;
+  const action = req.body.action;
+
+  if (action === "save") {
+    userDAO.saveListing(username, listingId, () => {
+      res.redirect(`/listing/${listingId}`);
+    });
+  } else if (action === "unsave") {
+    userDAO.removeSavedListing(username, listingId, () => {
+      res.redirect(`/listing/${listingId}`);
+    });
+  } else {
+    res.redirect(`/listing/${listingId}`);
+  }
+});
 /* ================= TENANT DASHBOARD ================= */
 router.get(
   "/dashboard/tenant_dashboard",
   isAuthenticated,
   isTenant,
-  (req, res) => {
-    const tenant = req.session.user.username;
+  async (req, res) => {
+    try {
+      const tenant = req.session.user.username;
 
-    messagesModel.countUnread(tenant, (err, unreadCount) => {
-      if (err) unreadCount = 0;
+      //  saved listings IDs
+      const savedListingIds = await new Promise((resolve) => {
+        userDAO.getSavedListings(tenant, (err, list) => {
+          if (err) return resolve([]);
+          resolve(list);
+        });
+      });
+
+      //listingDAO
+      const savedListings = await Promise.all(
+        savedListingIds.map(async (id) => {
+          const listing = await listingModel.getById(id);
+          return listing ? {
+            _id: listing._id,
+            title: listing.title,
+            location: listing.location,
+            price: listing.price,
+            imageUrl: listing.images && listing.images.length > 0
+              ? listing.images[0].url
+              : '/images/default-house.jpg'
+          } : null;
+        })
+      );
+
+      const filteredListings = savedListings.filter(l => l !== null);
+
+      const unreadCount = await new Promise((resolve) => {
+        messagesModel.countUnread(tenant, (err, count) => {
+          if (err) return resolve(0);
+          resolve(count);
+        });
+      });
 
       res.render("dashboard/tenant_dashboard", {
         title: "Tenant Dashboard",
         user: req.session.user,
-        savedListings: 0,
+        savedListingsCount: filteredListings.length,
+        savedListings: filteredListings,
         applicationsSent: 0,
         messages: unreadCount
       });
-    });
+    } catch (err) {
+      console.error("Tenant dashboard error:", err);
+      res.status(500).send("Error loading dashboard");
+    }
   }
 );
 

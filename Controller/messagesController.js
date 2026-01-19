@@ -1,3 +1,4 @@
+//messagesController.js
 exports.sendMessage = (req, res) => {
   const from = req.session.user.username;
   const { to, content } = req.body;

@@ -1,3 +1,4 @@
+//models/messagesModel.js
 const Datastore = require("gray-nedb");
 const db = new Datastore({ filename: "messages.db", autoload: true });
 

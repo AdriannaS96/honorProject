@@ -1,4 +1,3 @@
-// models/userModel.js
 const nedb = require("gray-nedb");
 const bcrypt = require("bcrypt");
 const saltRounds = 10;
@@ -13,7 +12,8 @@ class UserDAO {
     const entry = {
       username,
       password: hash,
-      role
+      role,
+      savedListings: [] 
     };
     await this.db.insert(entry);
     return entry;
@@ -25,6 +25,32 @@ class UserDAO {
 
   async comparePassword(plain, hash) {
     return bcrypt.compare(plain, hash);
+  }
+
+  // ==================  SAVE LISTING ==================
+  saveListing(username, listingId, cb) {
+    this.db.update(
+      { username },
+      { $addToSet: { savedListings: listingId } },
+      {},
+      cb
+    );
+  }
+
+  removeSavedListing(username, listingId, cb) {
+    this.db.update(
+      { username },
+      { $pull: { savedListings: listingId } },
+      {},
+      cb
+    );
+  }
+
+  getSavedListings(username, cb) {
+    this.db.findOne({ username }, (err, user) => {
+      if (err) return cb(err);
+      cb(null, user?.savedListings || []);
+    });
   }
 }
 

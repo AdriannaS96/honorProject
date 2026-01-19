@@ -26,7 +26,8 @@
 
         <div class="d-flex justify-content-center mt-3">
           {{#listing.images}}
-          <img src="{{url}}" class="img-thumbnail mx-1 thumb-img" style="width:60px; cursor:pointer;" data-bs-target="#listingCarousel" data-bs-slide-to="{{@index}}" />
+          <img src="{{url}}" class="img-thumbnail mx-1 thumb-img" style="width:60px; cursor:pointer;"
+               data-bs-target="#listingCarousel" data-bs-slide-to="{{@index}}" />
           {{/listing.images}}
         </div>
       </div>
@@ -45,19 +46,48 @@
       <p>{{listing.description}}</p>
       <p>Status: <span class="badge bg-info">{{listing.status}}</span></p>
 
+      <!-- OWNER BUTTONS -->
       {{#user}}
         {{#listing.isOwner}}
-          <a href="/dashboard/landlord/edit/{{listing._id}}" class="btn btn-warning me-2">Edit Listing</a>
-          <a href="/dashboard/landlord/delete/{{listing._id}}" class="btn btn-danger">Delete Listing</a>
+          <a href="/dashboard/landlord/edit/{{listing._id}}" class="btn btn-warning me-2">
+            Edit Listing
+          </a>
+          <a href="/dashboard/landlord/delete/{{listing._id}}" class="btn btn-danger">
+            Delete Listing
+          </a>
         {{/listing.isOwner}}
       {{/user}}
 
-    <a href="/dashboard/messages/{{listing.landlord}}" class="btn btn-primary mt-3">
-  Contact Landlord
-</a>
+      <!-- SAVE / UNSAVE (ONLY FOR TENANT, NOT OWNER) -->
+      {{#user}}
+        {{^listing.isOwner}}
+
+          {{^listing.isSaved}}
+          <form method="POST" action="/listing/{{listing._id}}/save" class="d-inline">
+            <input type="hidden" name="action" value="save">
+            <button type="submit" class="btn btn-outline-danger mt-3">
+              <i class="bi bi-heart"></i> Save Listing
+            </button>
+          </form>
+          {{/listing.isSaved}}
+
+          {{#listing.isSaved}}
+          <form method="POST" action="/listing/{{listing._id}}/save" class="d-inline">
+            <input type="hidden" name="action" value="unsave">
+            <button type="submit" class="btn btn-danger mt-3">
+              <i class="bi bi-heart-fill"></i> Saved
+            </button>
+          </form>
+          {{/listing.isSaved}}
+
+        {{/listing.isOwner}}
+      {{/user}}
+
+      <a href="/dashboard/messages/{{listing.landlord}}" class="btn btn-primary mt-3">
+        Contact Landlord
+      </a>
 
     </div>
-
   </div>
 </div>
 
