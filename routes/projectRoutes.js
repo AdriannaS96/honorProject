@@ -26,6 +26,12 @@ router.get("/", listingController.showHome);
 
 // PUBLIC LISTING DETAILS
 router.get("/listing/:id", listingController.showListingDetailsPublic);
+router.get(
+  "/dashboard/landlord_dashboard",
+  isAuthenticated,
+  isLandlord,
+  listingController.showLandlordDashboard
+);
 
 /* ================= ABOUT ================= */
 router.get("/about", (req, res) => {

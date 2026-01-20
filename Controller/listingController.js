@@ -1,6 +1,7 @@
 // Controller/listingController.js
 const listingDAO = require("../models/listingModel");
 const userDAO = require("../models/userModel");
+const messagesModel = require("../models/messagesModel");
 const fs = require("fs");
 const path = require("path");
 
@@ -52,15 +53,7 @@ exports.addListing = async (req, res) => {
         }))
       : [];
 
-    await listingDAO.add({
-      title,
-      location,
-      price,
-      description,
-      status,
-      landlord,
-      images
-    });
+    await listingDAO.add({ title, location, price, description, status, landlord, images });
 
     res.redirect("/dashboard/landlord/my_listings");
   } catch (err) {
@@ -75,16 +68,12 @@ exports.deleteListing = async (req, res) => {
     const listingId = req.params.id;
     const listing = await listingDAO.getById(listingId);
 
-    if (!listing) {
-      return res.redirect("/dashboard/landlord/my_listings");
-    }
+    if (!listing) return res.redirect("/dashboard/landlord/my_listings");
 
     if (listing.images && listing.images.length > 0) {
       listing.images.forEach(img => {
         const filePath = path.join(__dirname, "..", "public", img.url);
-        if (fs.existsSync(filePath)) {
-          fs.unlinkSync(filePath);
-        }
+        if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
     }
 
@@ -101,9 +90,7 @@ exports.showEditForm = async (req, res) => {
   try {
     const listing = await listingDAO.getById(req.params.id);
 
-    if (!listing) {
-      return res.redirect("/dashboard/landlord/my_listings");
-    }
+    if (!listing) return res.redirect("/dashboard/landlord/my_listings");
 
     res.render("dashboard/edit_listing", {
       title: "Edit Listing",
@@ -122,9 +109,7 @@ exports.updateListing = async (req, res) => {
     const { title, location, price, description, status } = req.body;
 
     const listing = await listingDAO.getById(listingId);
-    if (!listing) {
-      return res.redirect("/dashboard/landlord/my_listings");
-    }
+    if (!listing) return res.redirect("/dashboard/landlord/my_listings");
 
     let images = listing.images || [];
 
@@ -157,10 +142,7 @@ exports.updateListing = async (req, res) => {
 exports.showListingDetails = async (req, res) => {
   try {
     const listing = await listingDAO.getById(req.params.id);
-
-    if (!listing) {
-      return res.status(404).render("404");
-    }
+    if (!listing) return res.status(404).render("404");
 
     res.render("dashboard/details", {
       title: listing.title,
@@ -176,12 +158,8 @@ exports.showListingDetails = async (req, res) => {
 exports.showListingDetailsPublic = async (req, res) => {
   try {
     const listing = await listingDAO.getById(req.params.id);
+    if (!listing) return res.status(404).render("404");
 
-    if (!listing) {
-      return res.status(404).render("404");
-    }
-
-    // carousel images
     if (listing.images && listing.images.length > 0) {
       listing.images = listing.images.map((img, index) => ({
         url: img.url,
@@ -189,30 +167,59 @@ exports.showListingDetailsPublic = async (req, res) => {
       }));
     }
 
-    const isOwner =
-      req.session.user &&
-      req.session.user.username === listing.landlord;
+    const user = req.session.user || null;
+    const isTenant = user?.role === "tenant";
+    const isOwner = user && user.username === listing.landlord;
 
     let isSaved = false;
-
-    if (req.session.user?.role === "tenant") {
-      const savedListings = await new Promise(resolve => {
-        userDAO.getSavedListings(
-          req.session.user.username,
-          (err, list) => resolve(list || [])
-        );
-      });
-
+    if (isTenant) {
+      const savedListings = await new Promise(resolve =>
+        userDAO.getSavedListings(user.username, (err, list) => resolve(list || []))
+      );
       isSaved = savedListings.includes(listing._id);
     }
 
     res.render("listing_public_details", {
       title: listing.title,
-      listing: { ...listing, isOwner, isSaved },
-      user: req.session.user || null
+      user,
+      isTenant,
+      listing: {
+        ...listing,
+        isOwner,
+        isSaved
+      }
     });
   } catch (err) {
     console.error("❌ showListingDetailsPublic error:", err);
     res.status(500).send("Server error");
+  }
+};
+
+// ================= LANDLORD DASHBOARD =================
+exports.showLandlordDashboard = async (req, res) => {
+  try {
+    const landlordUsername = req.session.user.username;
+    const listings = await listingDAO.getByLandlord(landlordUsername) || [];
+
+    const totalListings = listings.length;
+    const pendingRequests = listings.filter(l => l.status === "Pending").length;
+
+    const unreadCount = await new Promise(resolve => {
+      messagesModel.countUnread(landlordUsername, (err, count) => {
+        if (err) return resolve(0);
+        resolve(count);
+      });
+    });
+
+    res.render("dashboard/landlord_dashboard", {
+      title: "Landlord Dashboard",
+      user: req.session.user,
+      activeListings: totalListings,
+      pendingRequests,
+      messages: unreadCount
+    });
+  } catch (err) {
+    console.error("❌ showLandlordDashboard error:", err);
+    res.status(500).send("Error loading dashboard");
   }
 };

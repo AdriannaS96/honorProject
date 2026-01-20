@@ -2,6 +2,8 @@
 
 <div class="container my-5">
   <div class="row">
+
+    <!-- LEFT: IMAGES -->
     <div class="col-md-6">
 
       {{#listing.images.length}}
@@ -9,81 +11,119 @@
         <div class="carousel-inner">
           {{#listing.images}}
           <div class="carousel-item {{#isFirst}}active{{/isFirst}}">
-            <img src="{{url}}" class="d-block w-100 img-fluid rounded" alt="{{../listing.title}}">
+            <img
+              src="{{url}}"
+              class="d-block w-100 img-fluid rounded"
+              alt="{{../listing.title}}"
+            >
           </div>
           {{/listing.images}}
         </div>
 
-        <!-- prev/next -->
-        <button class="carousel-control-prev" type="button" data-bs-target="#listingCarousel" data-bs-slide="prev">
-          <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <!-- prev / next -->
+        <button class="carousel-control-prev" type="button"
+                data-bs-target="#listingCarousel" data-bs-slide="prev">
+          <span class="carousel-control-prev-icon"></span>
           <span class="visually-hidden">Previous</span>
         </button>
-        <button class="carousel-control-next" type="button" data-bs-target="#listingCarousel" data-bs-slide="next">
-          <span class="carousel-control-next-icon" aria-hidden="true"></span>
+
+        <button class="carousel-control-next" type="button"
+                data-bs-target="#listingCarousel" data-bs-slide="next">
+          <span class="carousel-control-next-icon"></span>
           <span class="visually-hidden">Next</span>
         </button>
 
+        <!-- thumbnails -->
         <div class="d-flex justify-content-center mt-3">
           {{#listing.images}}
-          <img src="{{url}}" class="img-thumbnail mx-1 thumb-img" style="width:60px; cursor:pointer;"
-               data-bs-target="#listingCarousel" data-bs-slide-to="{{@index}}" />
+          <img
+            src="{{url}}"
+            class="img-thumbnail mx-1 thumb-img"
+            style="width:60px; cursor:pointer;"
+            data-bs-target="#listingCarousel"
+            data-bs-slide-to="{{@index}}"
+          />
           {{/listing.images}}
         </div>
       </div>
       {{/listing.images.length}}
 
       {{^listing.images.length}}
-        <img src="/images/default-house.jpg" alt="No Image" class="img-fluid rounded">
+        <img
+          src="/images/default-house.jpg"
+          alt="No Image"
+          class="img-fluid rounded"
+        >
       {{/listing.images.length}}
 
     </div>
 
+    <!-- RIGHT: DETAILS -->
     <div class="col-md-6">
       <h1>{{listing.title}}</h1>
       <p class="text-muted">{{listing.location}}</p>
       <h3 class="fw-bold">£{{listing.price}}</h3>
       <p>{{listing.description}}</p>
-      <p>Status: <span class="badge bg-info">{{listing.status}}</span></p>
+      <p>
+        Status:
+        <span class="badge bg-info">{{listing.status}}</span>
+      </p>
 
-      <!-- OWNER BUTTONS -->
+      <!-- OWNER ACTIONS -->
       {{#user}}
         {{#listing.isOwner}}
-          <a href="/dashboard/landlord/edit/{{listing._id}}" class="btn btn-warning me-2">
+          <a
+            href="/dashboard/landlord/edit/{{listing._id}}"
+            class="btn btn-warning me-2"
+          >
             Edit Listing
           </a>
-          <a href="/dashboard/landlord/delete/{{listing._id}}" class="btn btn-danger">
+
+          <a
+            href="/dashboard/landlord/delete/{{listing._id}}"
+            class="btn btn-danger"
+          >
             Delete Listing
           </a>
         {{/listing.isOwner}}
       {{/user}}
 
-      <!-- SAVE / UNSAVE (ONLY FOR TENANT, NOT OWNER) -->
-      {{#user}}
-        {{^listing.isOwner}}
+      <!-- SAVE / UNSAVE (ONLY TENANT) -->
+      {{#isTenant}}
 
-          {{^listing.isSaved}}
-          <form method="POST" action="/listing/{{listing._id}}/save" class="d-inline">
-            <input type="hidden" name="action" value="save">
-            <button type="submit" class="btn btn-outline-danger mt-3">
-              <i class="bi bi-heart"></i> Save Listing
-            </button>
-          </form>
-          {{/listing.isSaved}}
+        {{^listing.isSaved}}
+        <form
+          method="POST"
+          action="/listing/{{listing._id}}/save"
+          class="d-inline"
+        >
+          <input type="hidden" name="action" value="save">
+          <button type="submit" class="btn btn-outline-danger mt-3">
+            <i class="bi bi-heart"></i> Save Listing
+          </button>
+        </form>
+        {{/listing.isSaved}}
 
-          {{#listing.isSaved}}
-          <form method="POST" action="/listing/{{listing._id}}/save" class="d-inline">
-            <input type="hidden" name="action" value="unsave">
-            <button type="submit" class="btn btn-danger mt-3">
-              <i class="bi bi-heart-fill"></i> Saved
-            </button>
-          </form>
-          {{/listing.isSaved}}
+        {{#listing.isSaved}}
+        <form
+          method="POST"
+          action="/listing/{{listing._id}}/save"
+          class="d-inline"
+        >
+          <input type="hidden" name="action" value="unsave">
+          <button type="submit" class="btn btn-danger mt-3">
+            <i class="bi bi-heart-fill"></i> Saved
+          </button>
+        </form>
+        {{/listing.isSaved}}
 
-        {{/listing.isOwner}}
-      {{/user}}
+      {{/isTenant}}
 
-      <a href="/dashboard/messages/{{listing.landlord}}" class="btn btn-primary mt-3">
+      <!-- CONTACT -->
+      <a
+        href="/dashboard/messages/{{listing.landlord}}"
+        class="btn btn-primary mt-3"
+      >
         Contact Landlord
       </a>
 
