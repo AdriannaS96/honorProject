@@ -206,7 +206,8 @@ router.post(
   upload.array("images", 10),
   async (req, res) => {
     try {
-      const { title, location, price, description, status } = req.body;
+      // dodaj area i postcode
+      const { title, location, area, postcode, price, description, status } = req.body;
       const landlord = req.session.user.username;
 
       const images = req.files
@@ -217,7 +218,18 @@ router.post(
           }))
         : [];
 
-      await listingModel.add({ title, location, price, description, status, landlord, images });
+      // price konwertujemy na liczbę
+      await listingModel.add({
+        title,
+        location,
+        area,
+        postcode,
+        price: Number(price),
+        description,
+        status,
+        landlord,
+        images
+      });
 
       res.redirect("/dashboard/landlord/my_listings");
     } catch (err) {
@@ -226,6 +238,7 @@ router.post(
     }
   }
 );
+
 /* ================= LISTINGS ================= */
 router.get("/listings", async (req, res) => {
   try {

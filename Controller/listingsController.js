@@ -196,45 +196,24 @@ exports.showListingDetailsPublic = async (req, res) => {
 };
 //search
 exports.searchListings = (req, res) => {
-    const { location, area, minPrice, maxPrice, postcode } = req.query;
+  listingDAO.search(req.query, (err, listings) => {
+    if (err) return res.status(500).send("Database error");
 
-    const query = {};
+    const listingsWithImages = listings.map(l => ({
+      ...l,
+      imageUrl: l.images && Array.isArray(l.images) && l.images.length > 0
+        ? l.images[0].url
+        : "/images/default-house.jpg"
+    }));
 
-    if (location && typeof location === "string" && location.trim() !== "") {
-        query.location = new RegExp(location.trim(), "i");
-    }
-
-    if (area && typeof area === "string" && area.trim() !== "") {
-        query.area = new RegExp(area.trim(), "i");
-    }
-
-    if (postcode && typeof postcode === "string" && postcode.trim() !== "") {
-        query.postcode = new RegExp(postcode.trim(), "i");
-    }
-
-    if (minPrice || maxPrice) {
-        query.price = {};
-        if (minPrice && !isNaN(minPrice)) query.price.$gte = Number(minPrice);
-        if (maxPrice && !isNaN(maxPrice)) query.price.$lte = Number(maxPrice);
-    }
-
-    listingDAO.search(query, (err, listings) => {
-        if (err) return res.status(500).send("Database error");
-
-        const listingsWithImages = listings.map(l => ({
-            ...l,
-            imageUrl: l.images && Array.isArray(l.images) && l.images.length > 0
-                ? l.images[0].url
-                : "/images/default-house.jpg"
-        }));
-
-        res.render("listings", {
-            title: "Search Results",
-            listings: listingsWithImages,
-            filters: req.query
-        });
+    res.render("listings", {
+      title: "Search Results",
+      listings: listingsWithImages,
+      filters: req.query
     });
+  });
 };
+
 
 
 // ================= LANDLORD DASHBOARD =================
