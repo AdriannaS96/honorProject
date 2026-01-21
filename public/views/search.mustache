@@ -1,0 +1,69 @@
+{{> header}}
+<div class="container my-5">
+  <h2 class="mb-4">Search Listings</h2>
+ <form action="/search" method="GET" class="search-form">
+  <input
+    type="text"
+    name="location"
+    placeholder="City / Location"
+    value="{{filters.location}}">
+    
+  <input
+    type="text"
+    name="area"
+    placeholder="Area / Neighbourhood"
+    value="{{filters.area}}">
+    
+  <input
+    type="text"
+    name="postcode"
+    placeholder="Postcode"
+    value="{{filters.postcode}}">
+    
+  <input
+    type="number"
+    name="minPrice"
+    placeholder="Min Price"
+    value="{{filters.minPrice}}">
+    
+  <input
+    type="number"
+    name="maxPrice"
+    placeholder="Max Price"
+    value="{{filters.maxPrice}}">
+    
+  <button type="submit">Search</button>
+</form>
+
+</div>
+
+<hr>
+
+<div class="container">
+  <div class="row">
+    {{#listings.length}}
+      {{#listings}}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+          <img
+            src="{{#images.length}}{{images.0.url}}{{/images.length}}{{^images.length}}/images/default-house.jpg{{/images.length}}"
+            class="card-img-top"
+            alt="{{title}}">
+          <div class="card-body">
+            <h5 class="card-title">{{title}}</h5>
+            <p class="card-text">{{location}} - {{area}}</p>
+            <p class="fw-bold">£{{price}}</p>
+            <a href="/listing/{{_id}}" class="btn btn-outline-primary w-100">View Listing</a>
+          </div>
+        </div>
+      </div>
+      {{/listings}}
+    {{/listings.length}}
+    {{^listings.length}}
+      <p class="text-center">No listings found.</p>
+    {{/listings.length}}
+  </div>
+</div>
+
+
+{{> footer}}

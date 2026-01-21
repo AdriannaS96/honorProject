@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
 
-const listingController = require("../Controller/listingController");
+const listingController = require("../Controller/listingsController");
 
 // MODELS
 const upload = require("../auth/upload");
@@ -548,6 +548,9 @@ router.post("/dashboard/messages/send", isAuthenticated, isTenant, (req, res) =>
     res.redirect(`/dashboard/messages/${to}`);
   });
 });
+
+router.get("/search", listingController.searchListings);
+
 
 /* ================= EXPORT ================= */
 module.exports = router;
