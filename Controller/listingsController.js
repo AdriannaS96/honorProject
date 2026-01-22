@@ -196,20 +196,30 @@ exports.showListingDetailsPublic = async (req, res) => {
 };
 //search
 exports.searchListings = (req, res) => {
-  listingDAO.search(req.query, (err, listings) => {
+
+  const filters = {
+    location: req.query.city || "",
+    area: req.query.area || "",
+    postcode: req.query.postcode || "",
+    minPrice: req.query.minPrice || "",
+    maxPrice: req.query.maxPrice || ""
+  };
+
+  listingDAO.search(filters, (err, listings) => {
     if (err) return res.status(500).send("Database error");
 
     const listingsWithImages = listings.map(l => ({
       ...l,
-      imageUrl: l.images && Array.isArray(l.images) && l.images.length > 0
-        ? l.images[0].url
-        : "/images/default-house.jpg"
+      imageUrl:
+        l.images && l.images.length > 0
+          ? l.images[0].url
+          : "/images/default-house.jpg"
     }));
 
     res.render("listings", {
       title: "Search Results",
       listings: listingsWithImages,
-      filters: req.query
+      filters: req.query   // zostawiamy, żeby inputy się wypełniały
     });
   });
 };

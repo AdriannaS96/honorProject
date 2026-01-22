@@ -492,6 +492,11 @@ footer .social-icons {
         transform: translateY(0);
     }
 }
+/* search */
+  .card:hover {
+    transform: translateY(-5px);
+    transition: all 0.3s ease;
+  }
 /* ===============================
    Dashboard: Tenant Applications
    =============================== */

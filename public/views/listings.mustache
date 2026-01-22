@@ -2,60 +2,126 @@
 
 <div class="container my-5">
 
-  <!-- Search Bar -->
+  <!-- ================= SEARCH BAR ================= -->
+  <!-- Search form uses GET and URL query parameters -->
   <form action="/search" method="GET" class="row g-3 mb-4">
-    <div class="col-md-3">
-      <input type="text" name="city" class="form-control" placeholder="City" value="{{filters.city}}">
-    </div>
-    <div class="col-md-3">
-      <input type="text" name="area" class="form-control" placeholder="Area" value="{{filters.area}}">
-    </div>
-    <div class="col-md-2">
-      <input type="number" name="minPrice" class="form-control" placeholder="Min Price" value="{{filters.minPrice}}">
-    </div>
-    <div class="col-md-2">
-      <input type="number" name="maxPrice" class="form-control" placeholder="Max Price" value="{{filters.maxPrice}}">
-    </div>
-    <div class="col-md-2 d-grid">
-      <button type="submit" class="btn btn-primary"><i class="bi bi-search"></i> Search</button>
-    </div>
-  </form>
 
-  <!-- Listings Grid -->
+    <div class="col-md-3">
+      <input
+        type="text"
+        name="city"
+        class="form-control"
+        placeholder="City"
+        value="{{filters.city}}">
+    </div>
+
+    <div class="col-md-3">
+      <input
+        type="text"
+        name="area"
+        class="form-control"
+        placeholder="Area / Neighbourhood"
+        value="{{filters.area}}">
+    </div>
+
+    <div class="col-md-2">
+      <input
+        type="text"
+        name="postcode"
+        class="form-control"
+        placeholder="Postcode"
+        value="{{filters.postcode}}">
+    </div>
+
+    <div class="col-md-2">
+      <input
+        type="number"
+        name="minPrice"
+        class="form-control"
+        placeholder="Min Price"
+        value="{{filters.minPrice}}">
+    </div>
+
+    <div class="col-md-2">
+      <input
+        type="number"
+        name="maxPrice"
+        class="form-control"
+        placeholder="Max Price"
+        value="{{filters.maxPrice}}">
+    </div>
+
+    <div class="col-md-12 d-grid">
+      <button type="submit" class="btn btn-primary">
+        Search
+      </button>
+    </div>
+
+  </form>
+  <!-- ================= END SEARCH BAR ================= -->
+
+
+  <!-- ================= LISTINGS GRID ================= -->
   <div class="row row-cols-1 row-cols-md-3 g-4">
+
     {{#listings}}
     <div class="col">
       <div class="card h-100 shadow-sm">
-        <img src="{{imageUrl}}" class="card-img-top" alt="{{title}}">
+
+        <img
+          src="{{imageUrl}}"
+          class="card-img-top"
+          alt="{{title}}">
+
         <div class="card-body">
           <h5 class="card-title">{{title}}</h5>
-          <p class="card-text">{{location}}</p>
+          <p class="card-text">
+            {{location}}{{#area}} – {{area}}{{/area}}
+          </p>
           <p class="fw-bold">£{{price}}</p>
         </div>
+
         <div class="card-footer d-flex justify-content-between">
-          <a href="/listing/{{_id}}" class="btn btn-outline-primary btn-sm">View</a>
+          <a href="/listing/{{_id}}" class="btn btn-outline-primary btn-sm">
+            View
+          </a>
+
           {{#isTenant}}
-          {{^isSaved}}
-          <form method="POST" action="/listing/{{_id}}/save">
-            <input type="hidden" name="action" value="save">
-            <button type="submit" class="btn btn-outline-danger btn-sm"><i class="bi bi-heart"></i></button>
-          </form>
-          {{/isSaved}}
-          {{#isSaved}}
-          <form method="POST" action="/listing/{{_id}}/save">
-            <input type="hidden" name="action" value="unsave">
-            <button type="submit" class="btn btn-danger btn-sm"><i class="bi bi-heart-fill"></i></button>
-          </form>
-          {{/isSaved}}
+
+            {{^isSaved}}
+            <form method="POST" action="/listing/{{_id}}/save">
+              <input type="hidden" name="action" value="save">
+              <button type="submit" class="btn btn-outline-danger btn-sm">
+                <i class="bi bi-heart"></i>
+              </button>
+            </form>
+            {{/isSaved}}
+
+            {{#isSaved}}
+            <form method="POST" action="/listing/{{_id}}/save">
+              <input type="hidden" name="action" value="unsave">
+              <button type="submit" class="btn btn-danger btn-sm">
+                <i class="bi bi-heart-fill"></i>
+              </button>
+            </form>
+            {{/isSaved}}
+
           {{/isTenant}}
         </div>
+
       </div>
     </div>
     {{/listings}}
+
     {{^listings}}
-    <p class="text-muted">No listings found.</p>
+      <p class="text-muted text-center">
+        No listings found.
+      </p>
     {{/listings}}
+
   </div>
+  <!-- ================= END LISTINGS GRID ================= -->
+
 </div>
 
 {{> footer}}
