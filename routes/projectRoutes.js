@@ -12,16 +12,6 @@ const messagesModel = require("../models/messagesModel");
 
 // MIDDLEWARE
 const { isAuthenticated, isLandlord, isTenant } = require("../auth/auth");
-
-
-/* ================= HOME ================= */
-// router.get("/", (req, res) => {
-//   res.render("index", {
-//     title: "Home",
-//     user: req.session.user || null
-//   });
-// });
-
 router.get("/", listingController.showHome);
 
 // PUBLIC LISTING DETAILS
@@ -47,9 +37,23 @@ router.get("/register", (req, res) => {
 });
 
 router.post("/register", async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, email, password, repeatPassword, role } = req.body;
 
-  userDAO.findByUsername(username, async (err, existingUser) => {
+  if (password !== repeatPassword) {
+    return res.render("user/register", {
+      title: "Register",
+      error: "Passwords do not match"
+    });
+  }
+
+  if (password.length < 8) {
+    return res.render("user/register", {
+      title: "Register",
+      error: "Password must be at least 8 characters"
+    });
+  }
+
+  userDAO.findByUsernameOrEmail(username, async (err, existingUser) => {
     if (existingUser) {
       return res.render("user/register", {
         title: "Register",
@@ -57,10 +61,12 @@ router.post("/register", async (req, res) => {
       });
     }
 
-    await userDAO.create(username, password, role);
+    await userDAO.create(username, email, password, role);
+
     res.redirect("/login");
   });
 });
+
 
 /* ================= LOGIN ================= */
 router.get("/login", (req, res) => {
@@ -68,9 +74,9 @@ router.get("/login", (req, res) => {
 });
 
 router.post("/login", (req, res) => {
-  const { username, password } = req.body;
+  const { identifier, password } = req.body; 
 
-  userDAO.findByUsername(username, async (err, user) => {
+  userDAO.findByUsernameOrEmail(identifier, async (err, user) => {
     if (!user) {
       return res.render("user/login", { error: "User not found" });
     }
@@ -206,7 +212,6 @@ router.post(
   upload.array("images", 10),
   async (req, res) => {
     try {
-      // dodaj area i postcode
       const { title, location, area, postcode, price, description, status } = req.body;
       const landlord = req.session.user.username;
 
@@ -217,8 +222,6 @@ router.post(
             uploadedAt: new Date()
           }))
         : [];
-
-      // price konwertujemy na liczbę
       await listingModel.add({
         title,
         location,

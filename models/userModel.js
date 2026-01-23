@@ -7,13 +7,15 @@ class UserDAO {
     this.db = new nedb({ filename: "user.db", autoload: true });
   }
 
-  async create(username, password, role) {
+  async create(username, email, password, role) {
     const hash = await bcrypt.hash(password, saltRounds);
     const entry = {
       username,
+      email,
       password: hash,
       role,
-      savedListings: [] 
+      savedListings: [],
+      createdAt: new Date()
     };
     await this.db.insert(entry);
     return entry;
@@ -23,11 +25,19 @@ class UserDAO {
     this.db.findOne({ username }, cb);
   }
 
+  findByEmail(email, cb) {
+    this.db.findOne({ email }, cb);
+  }
+
+  findByUsernameOrEmail(identifier, cb) {
+    this.db.findOne({ $or: [{ username: identifier }, { email: identifier }] }, cb);
+  }
+
   async comparePassword(plain, hash) {
     return bcrypt.compare(plain, hash);
   }
 
-  // ==================  SAVE LISTING ==================
+  // ================== SAVE LISTING ==================
   saveListing(username, listingId, cb) {
     this.db.update(
       { username },

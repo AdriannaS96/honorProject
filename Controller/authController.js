@@ -1,4 +1,3 @@
-//Controller/authController.js
 const UserDAO = require("../models/userModel");
 const bcrypt = require("bcrypt");
 
@@ -11,15 +10,47 @@ exports.showRegister = (req, res) => {
 };
 
 exports.registerUser = async (req, res) => {
-  const { username, password, role } = req.body;
+  const { username, email, password, repeatPassword, role } = req.body;
 
-  UserDAO.findByUsername(username, async (err, user) => {
-    if (user) {
-      return res.render("user/register", { error: "User already exists" });
+  // 1️⃣ basic validation
+  if (!username || !email || !password || !repeatPassword || !role) {
+    return res.render("user/register", {
+      error: "All fields are required"
+    });
+  }
+
+  if (password !== repeatPassword) {
+    return res.render("user/register", {
+      error: "Passwords do not match"
+    });
+  }
+
+  if (password.length < 8) {
+    return res.render("user/register", {
+      error: "Password must be at least 8 characters long"
+    });
+  }
+
+  // 2️⃣ check username
+  UserDAO.findByUsername(username, (err, existingUser) => {
+    if (existingUser) {
+      return res.render("user/register", {
+        error: "Username already exists"
+      });
     }
 
-    await UserDAO.create(username, password, role);
-    res.redirect("/login");
+    // 3️⃣ check email
+    UserDAO.findByEmail(email, async (err, existingEmail) => {
+      if (existingEmail) {
+        return res.render("user/register", {
+          error: "Email already registered"
+        });
+      }
+
+      // 4️⃣ create user
+      await UserDAO.create(username, email, password, role);
+      res.redirect("/login");
+    });
   });
 };
 

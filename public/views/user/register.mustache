@@ -4,7 +4,10 @@
   <div class="row justify-content-center">
     <div class="col-md-6">
       <div class="card">
-        <div class="card-header text-center"><h3>Register</h3></div>
+        <div class="card-header text-center">
+          <h3>Register</h3>
+        </div>
+
         <div class="card-body">
 
           {{#error}}
@@ -12,30 +15,82 @@
           {{/error}}
 
           <form action="/register" method="POST">
+
+            <!-- Username -->
             <div class="mb-3">
               <label for="username" class="form-label">Username</label>
-              <input type="text" class="form-control" id="username" name="username" required>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                name="username"
+                minlength="3"
+                required>
+              <div class="form-text">
+                Username must be at least 3 characters long
+              </div>
             </div>
 
+            <!-- Email -->
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                class="form-control"
+                id="email"
+                name="email"
+                placeholder="you@example.com"
+                required>
+            </div>
+
+            <!-- Password -->
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
-              <input type="password" class="form-control" id="password" name="password" required>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                name="password"
+                minlength="8"
+                required>
+              <div class="form-text">
+                Password must be at least 8 characters long
+              </div>
             </div>
 
+            <!-- Repeat password -->
+            <div class="mb-3">
+              <label for="repeatPassword" class="form-label">Repeat password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="repeatPassword"
+                name="repeatPassword"
+                minlength="8"
+                required>
+            </div>
+
+            <!-- Role -->
             <div class="mb-3">
               <label for="role" class="form-label">Role</label>
               <select class="form-select" id="role" name="role" required>
+                <option value="" disabled selected>Select role</option>
                 <option value="landlord">Landlord</option>
                 <option value="tenant">Tenant</option>
               </select>
             </div>
 
             <div class="d-grid">
-              <button type="submit" class="btn btn-primary">Register</button>
+              <button type="submit" class="btn btn-primary">
+                Register
+              </button>
             </div>
           </form>
 
-          <p class="mt-3">Already have an account? <a href="/login">Login</a></p>
+          <p class="mt-3 text-center">
+            Already have an account? <a href="/login">Login</a>
+          </p>
+
         </div>
       </div>
     </div>
