@@ -1,0 +1,9 @@
+<!-- views/listing-card.mustache -->
+<div class="listing-card">
+  <h3>{{title}}</h3>
+  <p>{{location}}</p>
+  <p>Price: €{{price}}</p>
+  {{#images}}
+    <img src="{{url}}" alt="{{filename}}" />
+  {{/images}}
+</div>
