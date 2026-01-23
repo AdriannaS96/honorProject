@@ -618,6 +618,39 @@ footer .social-icons {
   font-size: 0.9rem;
   padding: 0.4em 0.7em;
 }
+/* ===================================================== search ===================================================== */
+/* Search panel */
+.search-card {
+  border-radius: 16px;
+  border: none;
+}
+
+/* Listing cards */
+.listing-card {
+  border: none;
+  border-radius: 18px;
+  overflow: hidden;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.listing-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* Images */
+.listing-img {
+  height: 220px;
+  object-fit: cover;
+}
+
+/* Price */
+.price {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #198754;
+}
+
 
 /* ===================================================== MESSAGES ===================================================== */
 .chat-messages {

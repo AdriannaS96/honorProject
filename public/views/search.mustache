@@ -1,69 +1,111 @@
 {{> header}}
-<div class="container my-5">
-  <h2 class="mb-4">Search Listings</h2>
- <form action="/listings/search" method="GET" class="search-form">
-  <input
-    type="text"
-    name="location"
-    placeholder="City / Location"
-    value="{{filters.location}}">
-    
-  <input
-    type="text"
-    name="area"
-    placeholder="Area / Neighbourhood"
-    value="{{filters.area}}">
-    
-  <input
-    type="text"
-    name="postcode"
-    placeholder="Postcode"
-    value="{{filters.postcode}}">
-    
-  <input
-    type="number"
-    name="minPrice"
-    placeholder="Min Price"
-    value="{{filters.minPrice}}">
-    
-  <input
-    type="number"
-    name="maxPrice"
-    placeholder="Max Price"
-    value="{{filters.maxPrice}}">
-    
-  <button type="submit">Search</button>
-</form>
 
+<div class="container my-5">
+
+  <h2 class="mb-4 text-center fw-semibold">Search Listings</h2>
+
+  <!-- SEARCH FORM -->
+  <form action="/listings/search" method="GET" class="card shadow-sm p-4 search-card">
+    <div class="row g-3">
+
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          name="location"
+          placeholder="City / Location"
+          value="{{filters.location}}">
+      </div>
+
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          name="area"
+          placeholder="Area / Neighbourhood"
+          value="{{filters.area}}">
+      </div>
+
+      <div class="col-md-4">
+        <input
+          type="text"
+          class="form-control"
+          name="postcode"
+          placeholder="Postcode"
+          value="{{filters.postcode}}">
+      </div>
+
+      <div class="col-md-3">
+        <input
+          type="number"
+          class="form-control"
+          name="minPrice"
+          placeholder="Min Price (£)"
+          value="{{filters.minPrice}}">
+      </div>
+
+      <div class="col-md-3">
+        <input
+          type="number"
+          class="form-control"
+          name="maxPrice"
+          placeholder="Max Price (£)"
+          value="{{filters.maxPrice}}">
+      </div>
+
+      <div class="col-md-6 d-grid">
+        <button type="submit" class="btn btn-primary btn-lg">
+          🔍 Search Listings
+        </button>
+      </div>
+
+    </div>
+  </form>
 </div>
 
-<hr>
+<hr class="my-5">
 
+<!-- LISTINGS -->
 <div class="container">
   <div class="row">
+
     {{#listings.length}}
       {{#listings}}
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow-sm">
+        <div class="card listing-card h-100">
+
           <img
             src="{{#images.length}}{{images.0.url}}{{/images.length}}{{^images.length}}/images/default-house.jpg{{/images.length}}"
-            class="card-img-top"
+            class="card-img-top listing-img"
             alt="{{title}}">
-          <div class="card-body">
+
+          <div class="card-body d-flex flex-column">
             <h5 class="card-title">{{title}}</h5>
-            <p class="card-text">{{location}} - {{area}}</p>
-            <p class="fw-bold">£{{price}}</p>
-            <a href="/listing/{{_id}}" class="btn btn-outline-primary w-100">View Listing</a>
+
+            <p class="text-muted small mb-2">
+              {{location}} · {{area}}
+            </p>
+
+            <p class="price mb-3">£{{price}}</p>
+
+            <a href="/listing/{{_id}}" class="btn btn-outline-primary mt-auto">
+              View Listing →
+            </a>
           </div>
         </div>
       </div>
       {{/listings}}
     {{/listings.length}}
+
     {{^listings.length}}
-      <p class="text-center">No listings found.</p>
+      <p class="text-center text-muted fs-5">
+        😕 No listings match your search.
+      </p>
     {{/listings.length}}
+
   </div>
 </div>
 
+{{> footer}}
 
 {{> footer}}
