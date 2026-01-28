@@ -586,6 +586,11 @@ router.post(
   isAuthenticated,
   accountController.updatePassword
 );
+router.post(
+  "/account/delete",
+  isAuthenticated,
+  accountController.deleteAccount
+);
 
 
 /* ================= EXPORT ================= */

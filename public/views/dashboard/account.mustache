@@ -1,68 +1,141 @@
 {{> header}}
 
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
 
-  <h2 class="mb-4 text-primary fw-bold">My Account</h2>
+  <!-- Page title -->
+  <div class="d-flex justify-content-between align-items-center mb-5">
+    <h2 class="fw-bold display-6 text-primary">My Account</h2>
+  </div>
 
+  <!-- Alerts -->
   {{#error}}
-    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
       {{error}}
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
   {{/error}}
 
   {{#success}}
-    <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
       {{success}}
       <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
     </div>
   {{/success}}
 
+  <!-- Dashboard grid -->
   <div class="row g-4">
 
-    <!-- LEFT COLUMN: Actions -->
+    <!-- LEFT COLUMN -->
     <div class="col-lg-6 d-flex flex-column gap-4">
 
       <!-- Update Email -->
-      <div class="card modern-card email-card p-4 position-relative overflow-hidden">
-        <div class="card-overlay"><i class="bi bi-envelope-fill"></i></div>
-        <h5 class="card-title mb-3 fw-bold">Update Email</h5>
-        <form method="POST" action="/account/update-email" class="d-flex flex-column gap-2">
-          <input type="email" name="email" class="form-control" placeholder="New email" required>
-          <button class="btn btn-light btn-hover mt-2 w-50 align-self-start">Update Email</button>
+      <div class="card modern-card email-card p-4 overflow-hidden">
+        <div class="card-overlay">
+          <i class="bi bi-envelope-fill"></i>
+        </div>
+
+        <h5 class="fw-bold mb-3">Update Email</h5>
+
+        <form method="POST" action="/account/update-email" class="d-flex flex-column gap-3">
+          <div class="form-floating">
+            <input
+              type="email"
+              class="form-control"
+              id="emailInput"
+              name="email"
+              placeholder="email"
+              required
+            >
+            <label for="emailInput">New email</label>
+          </div>
+
+          <button class="btn btn-light btn-hover w-50">
+            Update Email
+          </button>
         </form>
       </div>
 
       <!-- Change Password -->
-      <div class="card modern-card password-card p-4 position-relative overflow-hidden">
-        <div class="card-overlay"><i class="bi bi-key-fill"></i></div>
-        <h5 class="card-title mb-3 fw-bold">Change Password</h5>
-        <form method="POST" action="/account/update-password" class="d-flex flex-column gap-2">
-          <input type="password" name="currentPassword" class="form-control" placeholder="Current password" required>
-          <input type="password" name="newPassword" class="form-control" placeholder="New password" required>
-          <button class="btn btn-light btn-hover mt-2 w-50 align-self-start">Change Password</button>
+      <div class="card modern-card password-card p-4 overflow-hidden">
+        <div class="card-overlay">
+          <i class="bi bi-key-fill"></i>
+        </div>
+
+        <h5 class="fw-bold mb-3">Change Password</h5>
+
+        <form method="POST" action="/account/update-password" class="d-flex flex-column gap-3">
+          <div class="form-floating">
+            <input
+              type="password"
+              class="form-control"
+              id="currentPassword"
+              name="currentPassword"
+              placeholder="password"
+              required
+            >
+            <label for="currentPassword">Current password</label>
+          </div>
+
+          <div class="form-floating">
+            <input
+              type="password"
+              class="form-control"
+              id="newPassword"
+              name="newPassword"
+              placeholder="password"
+              required
+            >
+            <label for="newPassword">New password</label>
+          </div>
+
+          <button class="btn btn-light btn-hover w-50">
+            Change Password
+          </button>
         </form>
       </div>
 
       <!-- Delete Account -->
-      <div class="card modern-card delete-card p-4 position-relative overflow-hidden">
-        <div class="card-overlay"><i class="bi bi-trash-fill"></i></div>
-        <h5 class="card-title mb-3 fw-bold">Delete Account</h5>
-        <p class="text-muted mb-2">This action is irreversible!</p>
-        <form method="POST" action="/account/delete" onsubmit="return confirm('Are you sure you want to delete your account?');">
-          <button class="btn btn-danger btn-hover w-50 align-self-start">Delete Account</button>
+      <div class="card modern-card delete-card p-4 overflow-hidden border-danger">
+        <div class="card-overlay">
+          <i class="bi bi-trash-fill"></i>
+        </div>
+
+        <h5 class="fw-bold text-danger mb-2">Danger zone</h5>
+        <p class="text-muted mb-3">
+          This action is irreversible.
+        </p>
+
+        <form
+          method="POST"
+          action="/account/delete"
+          onsubmit="return confirm('Are you sure you want to delete your account?');"
+        >
+          <button class="btn btn-danger btn-hover w-50">
+            Delete Account
+          </button>
         </form>
       </div>
 
     </div>
 
-    <!-- RIGHT COLUMN: User Info -->
+    <!-- RIGHT COLUMN -->
     <div class="col-lg-6">
-      <div class="card modern-card info-card p-4 position-relative overflow-hidden">
-        <div class="card-overlay"><i class="bi bi-person-circle"></i></div>
-        <h5 class="card-title mb-3 fw-bold">Account Details</h5>
-        <p><strong>Username:</strong> {{user.username}}</p>
-        <p><strong>Role:</strong> {{user.role}}</p>
+      <div class="card modern-card info-card p-4 overflow-hidden h-100">
+        <div class="card-overlay">
+          <i class="bi bi-person-circle"></i>
+        </div>
+
+        <h5 class="fw-bold mb-4">Account Details</h5>
+
+        <p class="mb-2">
+          <strong>Username:</strong>
+          <span class="ms-1">{{user.username}}</span>
+        </p>
+
+        <p class="mb-0">
+          <strong>Role:</strong>
+          <span class="ms-1">{{user.role}}</span>
+        </p>
       </div>
     </div>
 

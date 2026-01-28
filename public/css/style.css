@@ -840,22 +840,42 @@ footer .social-icons {
 }
 /* my account */
 .modern-card {
-  border-radius: 1rem;
-  overflow: hidden;
+  border-radius: 1.25rem;
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255, 255, 255, 0.35);
+
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   position: relative;
-  color: #333;
-}
-.modern-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 12px 20px rgba(0,0,0,0.1);
 }
 
-/* Pastel gradient backgrounds */
-.email-card { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
-.password-card { background: linear-gradient(135deg, #fbc2eb, #a6c1ee); color: #333; }
-.delete-card { background: linear-gradient(135deg, #f8c8dc, #ffd3b6); color: #333; }
-.info-card { background: linear-gradient(135deg, #c3ffd1, #f0f9ff); color: #333; }
+.modern-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 24px 50px rgba(0, 0, 0, 0.14);
+}
+
+/* Blue primary cards */
+.email-card,
+.password-card,
+.info-card {
+  background: linear-gradient(
+    135deg,
+    #dbeafe,
+    #bfdbfe
+  );
+  color: #0f172a;
+}
+
+/* Delete = red only */
+.delete-card {
+  background: linear-gradient(
+    135deg,
+    #fee2e2,
+    #fecaca
+  );
+  color: #7f1d1d;
+}
 
 /* Overlay icons */
 .card-overlay {
@@ -863,22 +883,41 @@ footer .social-icons {
   top: -20px;
   right: -20px;
   font-size: 5rem;
-  color: rgba(255,255,255,0.15);
+  color: rgba(15, 23, 42, 0.12);
   pointer-events: none;
 }
 
-/* Button hover */
+.delete-card .card-overlay {
+  color: rgba(185, 28, 28, 0.2);
+}
+
+/* Buttons */
 .btn-hover {
   transition: transform 0.2s ease, background-color 0.3s ease;
 }
+
 .btn-hover:hover {
   transform: translateY(-2px);
 }
 
+.btn-light {
+  background-color: #ffffff;
+  border-color: #93c5fd;
+  color: #1e3a8a;
+}
+
+.btn-light:hover {
+  background-color: #eff6ff;
+}
+
 /* Responsive */
 @media (max-width: 991px) {
-  .row.g-4 { flex-direction: column; }
+  .row.g-4 {
+    flex-direction: column;
+  }
 }
+
+
 
 /* Responsive */
 @media (max-width: 768px) {

@@ -81,6 +81,14 @@ updatePassword(username, password, cb) {
     cb
   );
 }
+// DELETE ACCOUNT
+deleteUser(username, cb) {
+  this.db.remove(
+    { username },
+    { multi: false },
+    cb
+  );
+}
 
 
 }
