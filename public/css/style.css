@@ -838,6 +838,47 @@ footer .social-icons {
     height: 44px;
     padding: 0;
 }
+/* my account */
+.modern-card {
+  border-radius: 1rem;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  position: relative;
+  color: #333;
+}
+.modern-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 20px rgba(0,0,0,0.1);
+}
+
+/* Pastel gradient backgrounds */
+.email-card { background: linear-gradient(135deg, #a8edea, #fed6e3); color: #333; }
+.password-card { background: linear-gradient(135deg, #fbc2eb, #a6c1ee); color: #333; }
+.delete-card { background: linear-gradient(135deg, #f8c8dc, #ffd3b6); color: #333; }
+.info-card { background: linear-gradient(135deg, #c3ffd1, #f0f9ff); color: #333; }
+
+/* Overlay icons */
+.card-overlay {
+  position: absolute;
+  top: -20px;
+  right: -20px;
+  font-size: 5rem;
+  color: rgba(255,255,255,0.15);
+  pointer-events: none;
+}
+
+/* Button hover */
+.btn-hover {
+  transition: transform 0.2s ease, background-color 0.3s ease;
+}
+.btn-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* Responsive */
+@media (max-width: 991px) {
+  .row.g-4 { flex-direction: column; }
+}
 
 /* Responsive */
 @media (max-width: 768px) {

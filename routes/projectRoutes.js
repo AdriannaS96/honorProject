@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 
 const listingController = require("../Controller/listingsController");
+const accountController = require("../Controller/accountController");
 
 // MODELS
 const upload = require("../auth/upload");
@@ -566,6 +567,25 @@ router.post("/dashboard/messages/send", isAuthenticated, isTenant, (req, res) =>
 });
 
 router.get("/search", listingController.searchListings);
+// manage account
+// ACCOUNT
+router.get(
+  "/account",
+  isAuthenticated,
+  accountController.showAccount
+);
+
+router.post(
+  "/account/update-email",
+  isAuthenticated,
+  accountController.updateEmail
+);
+
+router.post(
+  "/account/update-password",
+  isAuthenticated,
+  accountController.updatePassword
+);
 
 
 /* ================= EXPORT ================= */

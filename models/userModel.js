@@ -62,6 +62,27 @@ class UserDAO {
       cb(null, user?.savedListings || []);
     });
   }
+
+//account
+updateEmail(username, email, cb) {
+  this.db.update(
+    { username },
+    { $set: { email } },
+    {},
+    cb
+  );
+}
+
+updatePassword(username, password, cb) {
+  this.db.update(
+    { username },
+    { $set: { password } },
+    {},
+    cb
+  );
+}
+
+
 }
 
 module.exports = new UserDAO();
