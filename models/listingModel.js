@@ -9,7 +9,7 @@ class ListingDAO {
   // ==================== ADD LISTING ====================
   async add({ title, location, area, postcode, price, description, status, landlord, images }) {
     const entry = {
-      title,
+      title, 
       location,
       area,
       postcode,
