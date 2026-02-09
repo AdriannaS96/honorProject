@@ -14,6 +14,8 @@ exports.showHome = async (req, res) => {
       id: l._id || l.id,
       title: l.title,
       location: l.location,
+      area: l.area,
+      postcode: l.postcode,
       price: l.price,
       imageUrl:
         l.images && l.images.length > 0
@@ -24,7 +26,17 @@ exports.showHome = async (req, res) => {
     res.render("index", {
       title: "Home",
       user: req.session.user || null,
-      featuredListings
+      featuredListings,
+      mapListingsJson: JSON.stringify(
+        featuredListings.map(listing => ({
+          id: listing.id,
+          title: listing.title,
+          location: listing.location,
+          area: listing.area,
+          postcode: listing.postcode,
+          price: listing.price
+        }))
+      )
     });
   } catch (err) {
     console.error("❌ showHome error:", err);
