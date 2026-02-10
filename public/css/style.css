@@ -88,6 +88,22 @@ h2 {
     min-height: 420px;
     border: 1px solid rgba(0, 0, 0, 0.1);
 }
+
+/* ===================================================== FAVORITES ===================================================== */
+.favorite-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+}
+
+.favorite-button i {
+    font-size: 1.1rem;
+}
+
 /* ===================================================== BUTTONS ===================================================== */
 .btn-primary {
     background-color: #007bff;
