@@ -1,5 +1,8 @@
 const userDAO = require("../models/userModel");
+const listingDAO = require("../models/listingModel");
 const bcrypt = require("bcrypt");
+const fs = require("fs");
+const path = require("path");
 
 // SHOW account page
 exports.showAccount = (req, res) => {
@@ -100,18 +103,44 @@ exports.updatePassword = (req, res) => {
 exports.deleteAccount = (req, res) => {
   const username = req.session.user.username;
 
-  userDAO.deleteUser(username, (err, numRemoved) => {
-    if (err || numRemoved === 0) {
+ (async () => {
+    try {
+      const listings = await listingDAO.getByLandlord(username);
+
+      listings.forEach(listing => {
+        if (!listing.images || listing.images.length === 0) return;
+
+        listing.images.forEach(img => {
+          const cleanUrl = img.url.startsWith("/") ? img.url.slice(1) : img.url;
+          const filePath = path.join(__dirname, "..", "public", cleanUrl);
+
+          if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+          }
+        });
+      });
+
+      await listingDAO.removeByLandlord(username);
+
+      userDAO.deleteUser(username, (err, numRemoved) => {
+        if (err || numRemoved === 0) {
+          return res.render("dashboard/account", {
+            error: "Failed to delete account",
+            user: req.session.user
+          });
+        }
+
+        req.session.destroy(() => {
+          res.redirect("/");
+        });
+      });
+    } catch (err) {
+      console.error("❌ deleteAccount error:", err);
       return res.render("dashboard/account", {
         error: "Failed to delete account",
         user: req.session.user
       });
     }
-
-    // destroy session after delete
-    req.session.destroy(() => {
-      res.redirect("/");
-    });
-  });
+ })();
 };
 
