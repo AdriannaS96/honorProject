@@ -63,7 +63,15 @@ class ListingDAO {
       });
     });
   }
-
+  // ==================== REMOVE BY LANDLORD ====================
+  async removeByLandlord(landlord) {
+    return new Promise((resolve, reject) => {
+      this.db.remove({ landlord }, { multi: true }, (err, numRemoved) => {
+        if (err) reject(err);
+        else resolve(numRemoved);
+      });
+    });
+  }
 // ==================== SEARCH ====================
 async search({ location, area, postcode, minPrice, maxPrice }, callback) {
   const query = {};
