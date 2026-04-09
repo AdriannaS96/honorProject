@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
-const bcrypt = require("bcrypt");
 
 const listingController = require("../Controller/listingsController");
 const accountController = require("../Controller/accountController");
+const authController = require("../Controller/authController");
 
 // MODELS
 const upload = require("../auth/upload");
@@ -33,108 +33,18 @@ router.get("/about", (req, res) => {
 });
 
 /* ================= REGISTER ================= */
-router.get("/register", (req, res) => {
-  res.render("user/register", { title: "Register" });
-});
-
-router.post("/register", async (req, res) => {
-  const { username, email, password, repeatPassword, role } = req.body;
-
-  if (password !== repeatPassword) {
-    return res.render("user/register", {
-      title: "Register",
-      error: "Passwords do not match"
-    });
-  }
-
-  if (password.length < 8) {
-    return res.render("user/register", {
-      title: "Register",
-      error: "Password must be at least 8 characters"
-    });
-  }
-
-  userDAO.findByUsernameOrEmail(username, async (err, existingUser) => {
-    if (existingUser) {
-      return res.render("user/register", {
-        title: "Register",
-        error: "User already exists"
-      });
-    }
-
-    await userDAO.create(username, email, password, role);
-
-    res.redirect("/login");
-  });
-});
+router.get("/register", authController.showRegister);
+router.post("/register", authController.registerUser);
 
 
 /* ================= LOGIN ================= */
-router.get("/login", (req, res) => {
-  res.render("user/login", { title: "Login" });
-});
-
-router.post("/login", (req, res) => {
-  const { identifier, password } = req.body; 
-
-  userDAO.findByUsernameOrEmail(identifier, async (err, user) => {
-    if (!user) {
-      return res.render("user/login", { error: "User not found" });
-    }
-
-    const match = await bcrypt.compare(password, user.password);
-    if (!match) {
-      return res.render("user/login", { error: "Wrong password" });
-    }
-
-    req.session.user = {
-      username: user.username,
-      role: user.role
-    };
-
-    if (user.role === "landlord") {
-      res.redirect("/dashboard/landlord_dashboard");
-    } else {
-      res.redirect("/dashboard/tenant_dashboard");
-    }
-  });
-});
+router.get("/login", authController.showLogin);
+router.post("/login", authController.loginUser);
 
 /* ================= LOGOUT ================= */
 router.get("/logout", (req, res) => {
   req.session.destroy(() => res.redirect("/"));
 });
-
-/* ================= LANDLORD DASHBOARD ================= */
-router.get(
-  "/dashboard/landlord_dashboard",
-  isAuthenticated,
-  isLandlord,
-  async (req, res) => {
-    try {
-      const landlord = req.session.user.username;
-      const listings = await listingModel.getByLandlord(landlord) || [];
-
-      const unreadCount = await new Promise((resolve) => {
-        messagesModel.countUnread(landlord, (err, count) => {
-          if (err) return resolve(0);
-          resolve(count);
-        });
-      });
-
-      res.render("dashboard/landlord_dashboard", {
-        title: "Landlord Dashboard",
-        user: req.session.user,
-        activeListings: listings.filter(l => l.status === "Active").length,
-        pendingRequests: listings.filter(l => l.status === "Pending").length,
-        messages: unreadCount
-      });
-    } catch (err) {
-      console.error(err);
-      res.status(500).send("Error loading dashboard");
-    }
-  }
-);
 
 /* ================= LANDLORD MY LISTINGS ================= */
 router.get(
@@ -258,34 +168,6 @@ router.get("/listings", async (req, res) => {
     res.status(500).send("Error loading listings");
   }
 });
-/* ================= LISTING DETAILS ================= */
-router.get("/listing/:id", async (req, res) => {
-  try {
-    const listing = await listingModel.findById(req.params.id);
-
-    if (!listing) {
-      return res.status(404).send("Listing not found");
-    }
-
-    if (listing.images && listing.images.length > 0) {
-      listing.images = listing.images.map((img, index) => ({
-        url: img.url,
-        isFirst: index === 0
-      }));
-    }
-
-    res.render("listing_public_details", {
-      title: listing.title,
-      user: req.session.user || null,
-      listing
-    });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send("Error loading listing details");
-  }
-});
-router.get("/listing/:id", listingController.showListingDetailsPublic);
-
 // POST – save / unsave listing
 router.post("/listing/:id/save", (req, res) => {
   if (!req.session.user || req.session.user.role !== "tenant") {

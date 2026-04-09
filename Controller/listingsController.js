@@ -4,6 +4,25 @@ const userDAO = require("../models/userModel");
 const messagesModel = require("../models/messagesModel");
 const fs = require("fs");
 const path = require("path");
+const DEFAULT_IMAGE_URL = "/images/default-house.jpg";
+
+const toImageUrl = images =>
+  images && images.length > 0 ? images[0].url : DEFAULT_IMAGE_URL;
+
+const toUploadedImages = files =>
+  (files || []).map(file => ({
+    filename: file.filename,
+    url: `/uploads/listings/${file.filename}`,
+    uploadedAt: new Date()
+  }));
+
+const getPublicFilePath = fileUrl => {
+  const normalizedUrl = (fileUrl || "").startsWith("/")
+    ? fileUrl.slice(1)
+    : fileUrl;
+
+  return path.join(__dirname, "..", "public", normalizedUrl);
+};
 
 // ================= HOME / FEATURED LISTINGS =================
 exports.showHome = async (req, res) => {
@@ -17,10 +36,7 @@ exports.showHome = async (req, res) => {
       area: l.area,
       postcode: l.postcode,
       price: l.price,
-      imageUrl:
-        l.images && l.images.length > 0
-          ? l.images[0].url
-          : "/images/default-house.jpg"
+      imageUrl: toImageUrl(l.images)
     }));
 
     res.render("index", {
@@ -57,13 +73,7 @@ exports.addListing = async (req, res) => {
     const { title, location, price, description, status } = req.body;
     const landlord = req.session.user.username;
 
-    const images = req.files
-      ? req.files.map(f => ({
-          filename: f.filename,
-          url: `/uploads/listings/${f.filename}`,
-          uploadedAt: new Date()
-        }))
-      : [];
+    const images = toUploadedImages(req.files);
 
     await listingDAO.add({ title, location, price, description, status, landlord, images });
 
@@ -84,7 +94,7 @@ exports.deleteListing = async (req, res) => {
 
     if (listing.images && listing.images.length > 0) {
       listing.images.forEach(img => {
-        const filePath = path.join(__dirname, "..", "public", img.url);
+        const filePath = getPublicFilePath(img.url);
         if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
       });
     }
@@ -126,11 +136,7 @@ exports.updateListing = async (req, res) => {
     let images = listing.images || [];
 
     if (req.files && req.files.length > 0) {
-      const newImages = req.files.map(f => ({
-        filename: f.filename,
-        url: `/uploads/listings/${f.filename}`,
-        uploadedAt: new Date()
-      }));
+      const newImages = toUploadedImages(req.files);
       images = images.concat(newImages);
     }
 
@@ -206,9 +212,8 @@ exports.showListingDetailsPublic = async (req, res) => {
     res.status(500).send("Server error");
   }
 };
-//search
+// ================= LISTINGS SEARCH =================
 exports.searchListings = (req, res) => {
-
   const filters = {
     location: req.query.city || "",
     area: req.query.area || "",
@@ -222,21 +227,16 @@ exports.searchListings = (req, res) => {
 
     const listingsWithImages = listings.map(l => ({
       ...l,
-      imageUrl:
-        l.images && l.images.length > 0
-          ? l.images[0].url
-          : "/images/default-house.jpg"
+      imageUrl: toImageUrl(l.images)
     }));
 
     res.render("listings", {
       title: "Search Results",
       listings: listingsWithImages,
-      filters: req.query   // zostawiamy, żeby inputy się wypełniały
+      filters: req.query
     });
   });
 };
-
-
 
 // ================= LANDLORD DASHBOARD =================
 exports.showLandlordDashboard = async (req, res) => {

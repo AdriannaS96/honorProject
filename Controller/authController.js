@@ -1,5 +1,42 @@
 const UserDAO = require("../models/userModel");
-const bcrypt = require("bcrypt");
+const MIN_PASSWORD_LENGTH = 8;
+
+const renderRegisterWithError = (res, error, formData = {}) =>
+  res.render("user/register", {
+    title: "Register",
+    error,
+    formData
+  });
+
+const renderLoginWithError = (res, error) =>
+  res.render("user/login", {
+    title: "Login",
+    error
+  });
+
+const findUserByUsername = username =>
+  new Promise((resolve, reject) => {
+    UserDAO.findByUsername(username, (err, user) => {
+      if (err) return reject(err);
+      resolve(user);
+    });
+  });
+
+const findUserByEmail = email =>
+  new Promise((resolve, reject) => {
+    UserDAO.findByEmail(email, (err, user) => {
+      if (err) return reject(err);
+      resolve(user);
+    });
+  });
+
+const findUserByIdentifier = identifier =>
+  new Promise((resolve, reject) => {
+    UserDAO.findByUsernameOrEmail(identifier, (err, user) => {
+      if (err) return reject(err);
+      resolve(user);
+    });
+  });
 
 exports.showLogin = (req, res) => {
   res.render("user/login", { title: "Login" });
@@ -10,74 +47,74 @@ exports.showRegister = (req, res) => {
 };
 
 exports.registerUser = async (req, res) => {
-  const { username, email, password, repeatPassword, role } = req.body;
+  try {
+    const { username, email, password, repeatPassword, role } = req.body;
+    const formData = { username, email, role };
 
-  // 1️⃣ basic validation
-  if (!username || !email || !password || !repeatPassword || !role) {
-    return res.render("user/register", {
-      error: "All fields are required"
-    });
-  }
-
-  if (password !== repeatPassword) {
-    return res.render("user/register", {
-      error: "Passwords do not match"
-    });
-  }
-
-  if (password.length < 8) {
-    return res.render("user/register", {
-      error: "Password must be at least 8 characters long"
-    });
-  }
-
-  // 2️⃣ check username
-  UserDAO.findByUsername(username, (err, existingUser) => {
-    if (existingUser) {
-      return res.render("user/register", {
-        error: "Username already exists"
-      });
+    if (!username || !email || !password || !repeatPassword || !role) {
+      return renderRegisterWithError(res, "All fields are required", formData);
     }
 
-    // 3️⃣ check email
-    UserDAO.findByEmail(email, async (err, existingEmail) => {
-      if (existingEmail) {
-        return res.render("user/register", {
-          error: "Email already registered"
-        });
-      }
+    if (password !== repeatPassword) {
+      return renderRegisterWithError(res, "Passwords do not match", formData);
+    }
 
-      // 4️⃣ create user
-      await UserDAO.create(username, email, password, role);
-      res.redirect("/login");
-    });
-  });
+    if (password.length < MIN_PASSWORD_LENGTH) {
+      return renderRegisterWithError(
+        res,
+        `Password must be at least ${MIN_PASSWORD_LENGTH} characters long`,
+        formData
+      );
+    }
+
+    const [existingUser, existingEmail] = await Promise.all([
+      findUserByUsername(username),
+      findUserByEmail(email)
+    ]);
+
+    if (existingUser) {
+      return renderRegisterWithError(res, "Username already exists", formData);
+    }
+
+    if (existingEmail) {
+      return renderRegisterWithError(res, "Email already registered", formData);
+    }
+
+    await UserDAO.create(username, email, password, role);
+    return res.redirect("/login");
+  } catch (err) {
+    console.error("❌ registerUser error:", err);
+    return renderRegisterWithError(res, "Unexpected server error");
+  }
 };
 
-exports.loginUser = (req, res) => {
-  const { username, password } = req.body;
+exports.loginUser = async (req, res) => {
+  try {
+    const { username, identifier, password } = req.body;
+    const loginValue = identifier || username;
+    const user = await findUserByIdentifier(loginValue);
 
-  UserDAO.findByUsername(username, async (err, user) => {
     if (!user) {
-      return res.render("user/login", { error: "User not found" });
+      return renderLoginWithError(res, "User not found");
     }
 
     const match = await UserDAO.comparePassword(password, user.password);
     if (!match) {
-      return res.render("user/login", { error: "Wrong password" });
+      return renderLoginWithError(res, "Wrong password");
     }
 
-    // SESSION
     req.session.user = {
       username: user.username,
       role: user.role
     };
 
-    // REDIRECT BY ROLE
     if (user.role === "landlord") {
-      res.redirect("/dashboard/landlord_dashboard");
-    } else {
-      res.redirect("/dashboard/tenant_dashboard");
+      return res.redirect("/dashboard/landlord_dashboard");
     }
-  });
+
+    return res.redirect("/dashboard/tenant_dashboard");
+  } catch (err) {
+    console.error("❌ loginUser error:", err);
+    return renderLoginWithError(res, "Unexpected server error");
+  }
 };
